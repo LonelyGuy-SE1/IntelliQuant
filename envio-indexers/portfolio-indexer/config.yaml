@@ -17,14 +17,14 @@ contracts:
 
 # Network configuration
 networks:
-  - id: 10143  # Monad Testnet Chain ID
-    start_block: 0  # HyperSync will auto-detect deployment block
+  - id: 10143 # Monad Testnet Chain ID
+    start_block: 0 # HyperSync will auto-detect deployment block
     contracts:
       # Real Monad testnet token addresses
       - name: ERC20Token
         address:
-          - "0x760AfE86e5de5fa0Ee542fc7B7B713e1c5425701"  # WMON (Wrapped MON)
-          - "0x836047a99e11f376522b447bffb6e3495dd0637c"  # ETH (Bridged from Sepolia)
+          - "0x760AfE86e5de5fa0Ee542fc7B7B713e1c5425701" # WMON (Wrapped MON)
+          - "0x836047a99e11f376522b447bffb6e3495dd0637c" # ETH (Bridged from Sepolia)
 
 # Optional: Include transaction data in events
 field_selection:
