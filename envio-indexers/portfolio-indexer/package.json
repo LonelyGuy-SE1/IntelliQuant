@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "Envio indexer for tracking token balances on Monad testnet",
   "scripts": {
-    "dev": "envio dev",
+    "dev": "pnpm install && envio dev",
+    "envio:dev": "envio dev",
     "start": "envio start",
     "codegen": "envio codegen",
     "local": "envio local",

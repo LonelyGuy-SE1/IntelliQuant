@@ -4,9 +4,10 @@
  */
 
 // Support both Vite (import.meta.env) and plain browser (Live Server)
-const API_URL = (import.meta && import.meta.env && import.meta.env.VITE_API_URL)
-  ? import.meta.env.VITE_API_URL
-  : 'http://localhost:3000';
+const API_URL =
+  import.meta && import.meta.env && import.meta.env.VITE_API_URL
+    ? import.meta.env.VITE_API_URL
+    : "http://localhost:3000";
 
 /**
  * Generic API request
@@ -15,7 +16,7 @@ async function apiRequest(endpoint, options = {}) {
   try {
     const response = await fetch(`${API_URL}${endpoint}`, {
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         ...options.headers,
       },
       ...options,
@@ -45,8 +46,8 @@ export async function getTokenScore(tokenAddress) {
  * Get multiple token scores
  */
 export async function getMultipleTokenScores(tokenAddresses) {
-  return await apiRequest('/api/tokens/scores', {
-    method: 'POST',
+  return await apiRequest("/api/tokens/scores", {
+    method: "POST",
     body: JSON.stringify({ tokens: tokenAddresses }),
   });
 }
@@ -63,7 +64,7 @@ export async function getUserPortfolio(userAddress) {
  */
 export async function analyzePortfolio(userAddress, targetAllocation = {}) {
   return await apiRequest(`/api/portfolio/${userAddress}/analyze`, {
-    method: 'POST',
+    method: "POST",
     body: JSON.stringify({ targetAllocation }),
   });
 }
@@ -73,7 +74,7 @@ export async function analyzePortfolio(userAddress, targetAllocation = {}) {
  */
 export async function getRebalancingTrades(userAddress, targetAllocation) {
   return await apiRequest(`/api/portfolio/${userAddress}/rebalance`, {
-    method: 'POST',
+    method: "POST",
     body: JSON.stringify({ targetAllocation }),
   });
 }
@@ -82,8 +83,8 @@ export async function getRebalancingTrades(userAddress, targetAllocation) {
  * Get AI recommendations
  */
 export async function getRecommendations(tokenAddresses, limit = 5) {
-  return await apiRequest('/api/recommendations', {
-    method: 'POST',
+  return await apiRequest("/api/recommendations", {
+    method: "POST",
     body: JSON.stringify({ tokens: tokenAddresses, limit }),
   });
 }
@@ -92,8 +93,8 @@ export async function getRecommendations(tokenAddresses, limit = 5) {
  * Get healthiest tokens
  */
 export async function getHealthiestTokens(tokenAddresses, limit = 10) {
-  return await apiRequest('/api/recommendations/healthiest', {
-    method: 'POST',
+  return await apiRequest("/api/recommendations/healthiest", {
+    method: "POST",
     body: JSON.stringify({ tokens: tokenAddresses, limit }),
   });
 }

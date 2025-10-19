@@ -30,9 +30,7 @@ export function getPublicClient() {
  */
 export function getBundlerClient() {
   if (!bundlerClientInstance) {
-    const bundlerUrl = (typeof import !== 'undefined' && typeof import.meta !== 'undefined' && import.meta.env)
-      ? import.meta.env.VITE_BUNDLER_URL
-      : undefined;
+    const bundlerUrl = import.meta.env.VITE_BUNDLER_URL;
 
     if (!bundlerUrl) {
       throw new Error('VITE_BUNDLER_URL not configured. Please set up a bundler for Monad testnet.');
