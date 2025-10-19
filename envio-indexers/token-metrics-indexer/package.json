@@ -1,0 +1,12 @@
+{
+  "name": "intelliquant-token-metrics-indexer",
+  "version": "1.0.0",
+  "description": "Token health metrics aggregation",
+  "scripts": {
+    "dev": "envio dev",
+    "codegen": "envio codegen"
+  },
+  "dependencies": {
+    "envio": "latest"
+  }
+}

@@ -1,0 +1,16 @@
+# Token Metrics Indexer
+# Note: For hackathon, consider implementing this logic in backend
+# by querying the DEX indexer GraphQL endpoint
+
+name: IntelliQuant-TokenMetrics
+description: Aggregates token health metrics from DEX data
+
+# This can reuse DEX events or query the DEX indexer's GraphQL
+# For simplicity, implement metrics calculation in backend services
+
+contracts: []
+
+networks:
+  - id: 10143
+    start_block: 0
+    contracts: []

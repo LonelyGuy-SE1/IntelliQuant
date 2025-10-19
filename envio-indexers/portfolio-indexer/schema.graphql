@@ -1,0 +1,46 @@
+# Portfolio Indexer Schema
+# Defines entities for tracking token balances and transfers
+
+# Individual transfer event
+type Transfer @entity {
+  id: ID!  # {transactionHash}-{logIndex}
+  from: String!
+  to: String!
+  value: BigInt!
+  tokenAddress: String!
+  tokenName: String  # Optional: token symbol/name
+  timestamp: BigInt!
+  transactionHash: String!
+  blockNumber: BigInt!
+}
+
+# User's balance for a specific token
+type UserBalance @entity {
+  id: ID!  # {userAddress}-{tokenAddress}
+  userAddress: String!
+  tokenAddress: String!
+  token: String  # Token symbol if available
+  balance: BigInt!
+  transferCount: Int!  # Number of transfers involving this token
+  lastUpdated: BigInt!  # Timestamp of last update
+}
+
+# Aggregated user data
+type User @entity {
+  id: ID!  # User address (checksummed)
+  address: String!
+  totalTokens: Int!  # Number of different tokens held (balance > 0)
+  lastUpdated: BigInt!  # Timestamp of last activity
+  balances: [UserBalance!]! @derivedFrom(field: "userAddress")
+}
+
+# Token metadata and statistics
+type Token @entity {
+  id: ID!  # Token contract address (checksummed)
+  address: String!
+  symbol: String  # Token symbol if known
+  decimals: Int  # Token decimals if known
+  holderCount: Int!  # Number of holders with balance > 0
+  totalTransfers: Int!  # Total transfer events
+  lastActivity: BigInt!  # Timestamp of last transfer
+}

@@ -1,0 +1,104 @@
+# DEX Indexer Schema
+# Defines entities for tracking swaps and liquidity events
+
+# Swap event (trade)
+type SwapEvent @entity {
+  id: ID!  # {transactionHash}-{logIndex}
+  pool: String!  # Pool contract address
+  sender: String!
+  recipient: String  # V3 has recipient, V2 uses 'to'
+  to: String  # V2 recipient
+
+  # Amounts (use absolute values for V3 int256)
+  amount0In: BigInt!
+  amount1In: BigInt!
+  amount0Out: BigInt!
+  amount1Out: BigInt!
+
+  # V3 specific fields
+  sqrtPriceX96: BigInt  # Price after swap
+  liquidity: BigInt  # Liquidity at swap
+  tick: Int  # Tick after swap
+
+  timestamp: BigInt!
+  blockNumber: BigInt!
+  transactionHash: String!
+}
+
+# Liquidity event (add or remove)
+type LiquidityEvent @entity {
+  id: ID!  # {transactionHash}-{logIndex}
+  pool: String!
+  type: String!  # "MINT" or "BURN"
+  sender: String!
+  owner: String  # V3 position owner
+  to: String  # V2 recipient (for burns)
+
+  amount0: BigInt!
+  amount1: BigInt!
+  liquidity: BigInt  # LP tokens or V3 liquidity
+
+  # V3 position bounds
+  tickLower: Int
+  tickUpper: Int
+
+  timestamp: BigInt!
+  blockNumber: BigInt!
+  transactionHash: String!
+}
+
+# Pool state tracking
+type Pool @entity {
+  id: ID!  # Pool address
+  address: String!
+  token0: String  # Token0 address
+  token1: String  # Token1 address
+
+  # V2 reserves
+  reserve0: BigInt
+  reserve1: BigInt
+
+  # V3 state
+  sqrtPriceX96: BigInt
+  tick: Int
+  liquidity: BigInt
+
+  # Statistics
+  totalSwaps: Int!
+  totalLiquidityEvents: Int!
+  volume0: BigInt!  # Cumulative volume token0
+  volume1: BigInt!  # Cumulative volume token1
+
+  lastUpdated: BigInt!
+}
+
+# Hourly snapshot for analytics
+type PoolHourlySnapshot @entity {
+  id: ID!  # {poolAddress}-{hourTimestamp}
+  pool: String!
+  timestamp: BigInt!  # Start of hour
+
+  # Volume in this hour
+  volume0: BigInt!
+  volume1: BigInt!
+  swapCount: Int!
+
+  # Liquidity at snapshot
+  reserve0: BigInt
+  reserve1: BigInt
+  liquidityV3: BigInt
+
+  # Price at snapshot (V3)
+  sqrtPriceX96: BigInt
+  tick: Int
+}
+
+# Sync events (V2 reserve updates)
+type SyncEvent @entity {
+  id: ID!  # {transactionHash}-{logIndex}
+  pool: String!
+  reserve0: BigInt!
+  reserve1: BigInt!
+  timestamp: BigInt!
+  blockNumber: BigInt!
+}

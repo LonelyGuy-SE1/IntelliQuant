@@ -1,0 +1,19 @@
+{
+  "name": "intelliquant-portfolio-indexer",
+  "version": "1.0.0",
+  "description": "Envio indexer for tracking token balances on Monad testnet",
+  "scripts": {
+    "dev": "envio dev",
+    "start": "envio start",
+    "codegen": "envio codegen",
+    "local": "envio local",
+    "test": "envio test"
+  },
+  "dependencies": {
+    "envio": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}

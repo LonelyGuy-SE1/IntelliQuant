@@ -1,0 +1,15 @@
+# Smart Money Indexer
+# Tracks whale addresses
+
+name: IntelliQuant-SmartMoney
+description: Monitors whale and smart money activity
+
+# For hackathon: Filter existing portfolio/DEX data by whale addresses
+# in backend rather than separate indexer
+
+contracts: []
+
+networks:
+  - id: 10143
+    start_block: 0
+    contracts: []
