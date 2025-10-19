@@ -45,6 +45,12 @@ Error: EE210: Schema contains the following reserved keywords: type
 
 **Root Cause**: The `LiquidityEvent` entity in the dex-indexer's `schema.graphql` had a field named `type`, which is a reserved keyword in GraphQL. Field names cannot use GraphQL reserved words like `type`, `query`, `mutation`, etc.
 
+### Issue #5: Missing EventHandlers.ts in Token Metrics Indexer
+
+The token-metrics-indexer was completing codegen but failing at "Failed to apply schema" stage.
+
+**Root Cause**: The token-metrics-indexer had no `src/EventHandlers.ts` file. Even though this indexer has empty contracts arrays and is meant to calculate metrics in the backend, Envio still requires an EventHandlers.ts file for deployment.
+
 ## Solutions Applied
 
 ### Fix #1: Pin Envio Version
@@ -153,6 +159,30 @@ const liquidityEntity: LiquidityEvent = {
 };
 ```
 
+### Fix #5: Add Minimal EventHandlers File
+
+Created an empty `EventHandlers.ts` file for the token-metrics-indexer to satisfy Envio's deployment requirements.
+
+**File Created:**
+
+- `envio-indexers/token-metrics-indexer/src/EventHandlers.ts`
+
+**Content:**
+
+```typescript
+/**
+ * Token Metrics Indexer Event Handlers
+ * 
+ * NOTE: This indexer is intentionally minimal.
+ * For the hackathon, token metrics are calculated in the backend
+ * by querying the DEX indexer's GraphQL endpoint.
+ */
+
+export {};
+```
+
+**Note:** This indexer has no contracts to index - it's designed to let the backend calculate metrics by querying the dex-indexer's GraphQL API.
+
 ## Git History
 
 - **Commit 1**: `307b0c2` - "fix(envio): Pin envio version to ^2.28.2 to fix deployment validation errors"
@@ -162,6 +192,8 @@ const liquidityEntity: LiquidityEvent = {
 - **Commit 5**: `7046edb` - "fix(envio): ACTUALLY remove deprecated 'abi' field from config.yaml" ✅ **THE REAL FIX**
 - **Commit 6**: `98a375e` - "docs(envio): Clarify that commit a26eda8 failed and 7046edb is the real fix"
 - **Commit 7**: `4d29690` - "fix(envio): Rename 'type' to 'eventType' in LiquidityEvent schema" ✅ **FIXES DEX INDEXER**
+- **Commit 8**: `afd1955` - "docs(envio): Document reserved keyword fix for dex-indexer"
+- **Commit 9**: `8db325c` - "fix(envio): Add minimal EventHandlers.ts to token-metrics-indexer" ✅ **FIXES TOKEN METRICS**
 - **Branch**: `envio` (pushed to origin)
 - **Date**: October 20, 2025
 
