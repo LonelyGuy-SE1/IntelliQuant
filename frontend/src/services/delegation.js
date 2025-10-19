@@ -3,7 +3,6 @@
  * Creates and manages delegations with security caveats
  */
 
-import { createDelegation, createCaveatBuilder } from '@metamask/delegation-toolkit';
 import { parseEther } from 'viem';
 
 /**
@@ -22,44 +21,27 @@ export async function createTradingDelegation(smartAccount, delegateAddress, opt
       maxCalls = 20, // Max number of calls
     } = options;
 
-    // Create caveat builder
-    const caveatBuilder = createCaveatBuilder(smartAccount.environment);
-
-    // Build caveats
-    let caveatsConfig = caveatBuilder;
-
-    // Restrict to specific contracts (DEX routers)
-    if (allowedTargets.length > 0) {
-      caveatsConfig = caveatsConfig.addCaveat('allowedTargets', allowedTargets);
-    }
-
-    // Restrict to specific functions
-    if (allowedMethods.length > 0) {
-      caveatsConfig = caveatsConfig.addCaveat('allowedMethods', allowedMethods);
-    }
-
-    // Limit native token transfers
-    caveatsConfig = caveatsConfig.addCaveat(
-      'nativeTokenTransferAmount',
-      parseEther(maxNativeTransfer)
-    );
-
-    // Limit number of calls
-    caveatsConfig = caveatsConfig.addCaveat('limitedCalls', maxCalls);
-
-    const caveats = caveatsConfig.build();
-
-    // Create delegation
-    const delegation = createDelegation({
-      to: delegateAddress,
-      from: smartAccount.address,
-      caveats: caveats,
-    });
+    // For now, we'll create a simple delegation structure
+    // In production, you'd use proper caveat encoding per ERC-7710
+    const delegation = {
+      delegate: delegateAddress,
+      authority: smartAccount.address,
+      caveats: {
+        allowedTargets: allowedTargets.length > 0 ? allowedTargets : ['any'],
+        allowedMethods: allowedMethods.length > 0 ? allowedMethods : ['any'],
+        maxNativeTransfer,
+        maxCalls,
+      },
+      timestamp: Date.now(),
+    };
 
     console.log('Created delegation:', delegation);
 
-    // Sign delegation
-    const signedDelegation = await smartAccount.signDelegation(delegation);
+    // Store delegation (in production, this would be signed and stored on-chain or off-chain)
+    const signedDelegation = {
+      ...delegation,
+      signature: 'mock-signature-for-demo', // In production, properly sign with EIP-712
+    };
 
     console.log('Signed delegation:', signedDelegation);
 
@@ -87,21 +69,21 @@ export async function createTradingDelegation(smartAccount, delegateAddress, opt
  */
 export async function createMinimalDelegation(smartAccount, delegateAddress) {
   try {
-    const caveatBuilder = createCaveatBuilder(smartAccount.environment);
+    // Minimal delegation for testing
+    const delegation = {
+      delegate: delegateAddress,
+      authority: smartAccount.address,
+      caveats: {
+        maxNativeTransfer: '0.1',
+        maxCalls: 5,
+      },
+      timestamp: Date.now(),
+    };
 
-    // Minimal caveats: small transfers only
-    const caveats = caveatBuilder
-      .addCaveat('nativeTokenTransferAmount', parseEther('0.1'))
-      .addCaveat('limitedCalls', 5)
-      .build();
-
-    const delegation = createDelegation({
-      to: delegateAddress,
-      from: smartAccount.address,
-      caveats: caveats,
-    });
-
-    const signedDelegation = await smartAccount.signDelegation(delegation);
+    const signedDelegation = {
+      ...delegation,
+      signature: 'mock-signature-for-demo',
+    };
 
     return {
       delegation,
