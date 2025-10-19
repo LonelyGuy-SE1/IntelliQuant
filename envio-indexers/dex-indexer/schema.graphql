@@ -29,7 +29,7 @@ type SwapEvent @entity {
 type LiquidityEvent @entity {
   id: ID!  # {transactionHash}-{logIndex}
   pool: String!
-  type: String!  # "MINT" or "BURN"
+  eventType: String!  # "MINT" or "BURN"
   sender: String!
   owner: String  # V3 position owner
   to: String  # V2 recipient (for burns)

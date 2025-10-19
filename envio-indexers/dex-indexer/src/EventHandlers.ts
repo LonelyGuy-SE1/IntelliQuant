@@ -72,7 +72,7 @@ UniswapV2Pool.Mint.handler(async ({ event, context }) => {
   const liquidityEntity: LiquidityEvent = {
     id: `${event.transaction.hash}-${event.logIndex}`,
     pool: poolAddress,
-    type: "MINT",
+    eventType: "MINT",
     sender: sender,
     owner: undefined,
     to: undefined,
@@ -102,7 +102,7 @@ UniswapV2Pool.Burn.handler(async ({ event, context }) => {
   const liquidityEntity: LiquidityEvent = {
     id: `${event.transaction.hash}-${event.logIndex}`,
     pool: poolAddress,
-    type: "BURN",
+    eventType: "BURN",
     sender: sender,
     owner: undefined,
     to: to,
