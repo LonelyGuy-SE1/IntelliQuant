@@ -1,0 +1,10 @@
+# Token Metrics Indexer Schema
+# This indexer aggregates metrics from the DEX indexer's GraphQL endpoint
+# For the hackathon, metrics are calculated in the backend by querying the DEX indexer
+
+# Placeholder entity - required for valid Envio schema
+# Not actively used since this indexer doesn't index events directly
+type TokenMetric @entity {
+  id: ID!
+  # Future: Add token health metrics here if needed
+}
