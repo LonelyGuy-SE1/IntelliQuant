@@ -35,6 +35,16 @@ Caused by:
 
 **Root Cause**: The config.yaml files were using an old/incorrect format where the `abi` field was explicitly defined as a separate field under each contract. In Envio v2.28.2, the `abi` field is NOT supported as a top-level field within contract definitions.
 
+### Issue #4: Reserved Keyword "type" in GraphQL Schema
+
+After fixing the config format, the dex-indexer failed with:
+
+```
+Error: EE210: Schema contains the following reserved keywords: type
+```
+
+**Root Cause**: The `LiquidityEvent` entity in the dex-indexer's `schema.graphql` had a field named `type`, which is a reserved keyword in GraphQL. Field names cannot use GraphQL reserved words like `type`, `query`, `mutation`, etc.
+
 ## Solutions Applied
 
 ### Fix #1: Pin Envio Version
@@ -106,6 +116,43 @@ contracts:
       - event: "Transfer(address indexed from, address indexed to, uint256 value)"
 ```
 
+### Fix #4: Rename Reserved Keyword Field
+
+Renamed the `type` field to `eventType` in the dex-indexer schema and handlers.
+
+**Files Modified:**
+
+- `envio-indexers/dex-indexer/schema.graphql`
+- `envio-indexers/dex-indexer/src/EventHandlers.ts`
+
+**Change:**
+
+```graphql
+# BEFORE (causes "reserved keywords: type" error)
+type LiquidityEvent @entity {
+  id: ID!
+  pool: String!
+  type: String!  # ❌ "type" is a reserved keyword
+  ...
+}
+
+# AFTER (correct)
+type LiquidityEvent @entity {
+  id: ID!
+  pool: String!
+  eventType: String!  # ✅ Renamed to avoid reserved keyword
+  ...
+}
+```
+
+```typescript
+// Updated in EventHandlers.ts
+const liquidityEntity: LiquidityEvent = {
+  eventType: "MINT",  // Changed from: type: "MINT"
+  ...
+};
+```
+
 ## Git History
 
 - **Commit 1**: `307b0c2` - "fix(envio): Pin envio version to ^2.28.2 to fix deployment validation errors"
@@ -113,6 +160,8 @@ contracts:
 - **Commit 3**: `a26eda8` - ~~"fix(envio): Remove deprecated 'abi' field"~~ ❌ **FAILED - only changed whitespace**
 - **Commit 4**: `3acee17` - "docs(envio): Update deployment fix documentation"
 - **Commit 5**: `7046edb` - "fix(envio): ACTUALLY remove deprecated 'abi' field from config.yaml" ✅ **THE REAL FIX**
+- **Commit 6**: `98a375e` - "docs(envio): Clarify that commit a26eda8 failed and 7046edb is the real fix"
+- **Commit 7**: `4d29690` - "fix(envio): Rename 'type' to 'eventType' in LiquidityEvent schema" ✅ **FIXES DEX INDEXER**
 - **Branch**: `envio` (pushed to origin)
 - **Date**: October 20, 2025
 
