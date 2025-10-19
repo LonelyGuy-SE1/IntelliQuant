@@ -110,9 +110,17 @@ contracts:
 
 - **Commit 1**: `307b0c2` - "fix(envio): Pin envio version to ^2.28.2 to fix deployment validation errors"
 - **Commit 2**: `5fc5893` - "fix(envio): Add missing schema.graphql to token-metrics-indexer"
-- **Commit 3**: `a26eda8` - "fix(envio): Remove deprecated 'abi' field from config.yaml"
+- **Commit 3**: `a26eda8` - ~~"fix(envio): Remove deprecated 'abi' field"~~ ❌ **FAILED - only changed whitespace**
+- **Commit 4**: `3acee17` - "docs(envio): Update deployment fix documentation"
+- **Commit 5**: `7046edb` - "fix(envio): ACTUALLY remove deprecated 'abi' field from config.yaml" ✅ **THE REAL FIX**
 - **Branch**: `envio` (pushed to origin)
 - **Date**: October 20, 2025
+
+### ⚠️ Important Note About the Failed Fix
+
+**Commit a26eda8 DID NOT WORK!** Despite the commit message saying it removed the `abi` field, it only changed whitespace. This is why deployments continued failing with the same error even after that commit.
+
+**Commit 7046edb is the actual working fix** that removes all `abi:` sections from config.yaml files.
 
 ## Deployment Status
 
