@@ -2,9 +2,19 @@
 # This indexer aggregates metrics from the DEX indexer's GraphQL endpoint
 # For the hackathon, metrics are calculated in the backend by querying the DEX indexer
 
-# Placeholder entity - required for valid Envio schema
-# Not actively used since this indexer doesn't index events directly
+# Token health and risk metrics
 type TokenMetric @entity {
-  id: ID!
-  # Future: Add token health metrics here if needed
+  id: ID!  # Token address
+  tokenAddress: String!
+  symbol: String
+  
+  # Health metrics (calculated in backend)
+  liquidityScore: BigInt
+  volumeScore: BigInt
+  volatilityScore: BigInt
+  overallScore: BigInt
+  
+  # Timestamps
+  lastUpdated: BigInt!
+  createdAt: BigInt!
 }
