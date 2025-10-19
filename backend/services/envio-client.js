@@ -39,8 +39,8 @@ export async function getUserPortfolio(address) {
     const data = await portfolioClient.request(query, { address: address.toLowerCase() });
     return data.User[0] || null;
   } catch (error) {
-    console.error('Error fetching portfolio:', error.message);
-    throw error;
+    console.error('Error fetching portfolio (Envio may not be running):', error.message);
+    return null; // Return null instead of throwing when Envio is unavailable
   }
 }
 
@@ -73,8 +73,8 @@ export async function getPoolData(poolAddress) {
     const data = await dexClient.request(query, { poolAddress: poolAddress.toLowerCase() });
     return data.Pool[0] || null;
   } catch (error) {
-    console.error('Error fetching pool data:', error.message);
-    throw error;
+    console.error('Error fetching pool data (Envio may not be running):', error.message);
+    return null; // Return null instead of throwing when Envio is unavailable
   }
 }
 

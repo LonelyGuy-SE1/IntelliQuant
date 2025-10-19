@@ -10,25 +10,9 @@
 
 ---
 
-## 🚀 How to Run Locally
+## 🚀 Quick Start (Just Frontend + Backend)
 
-### DON'T use `npm install` - use `pnpm run dev`!
-
-**Terminal 1 - Portfolio Indexer:**
-```bash
-cd envio-indexers/portfolio-indexer
-pnpm run dev
-```
-Opens at: http://localhost:8080
-
-**Terminal 2 - DEX Indexer:**
-```bash
-cd envio-indexers/dex-indexer
-pnpm run dev
-```
-Opens at: http://localhost:8081
-
-**Terminal 3 - Backend:**
+**Terminal 1 - Backend:**
 ```bash
 cd backend
 npm install
@@ -36,13 +20,19 @@ npm run dev
 ```
 Runs on: http://localhost:3000
 
-**Terminal 4 - Frontend:**
+**Terminal 2 - Frontend:**
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
-**Open:** http://localhost:5173
+**Open in browser:** http://localhost:5173
+
+### ⚠️ Envio Indexers (Optional for Local Development)
+
+**Note:** Envio indexers have Windows compatibility issues. For local development, the app works WITHOUT indexers (will show empty portfolio until you deploy to Envio hosted service).
+
+To deploy indexers, use [Envio Hosted Service](#-envio-hosted-service-setup) instead of running locally.
 
 ---
 
@@ -122,20 +112,20 @@ ENVIO_DEX_ENDPOINT=https://indexer.bigdevenergy.link/YOUR_DEX_ID/v1/graphql
 
 ---
 
-## ⚠️ Important
+## 🎯 Current Setup Status
 
-**For Envio indexers:** Use `pnpm run dev`
-**For backend/frontend:** Use `npm install` then `npm run dev`
-
-The indexers will auto-install dependencies when you run `pnpm run dev`!
+✅ **Frontend running:** http://localhost:5173
+✅ **Backend running:** http://localhost:3000
+✅ **MetaMask wallet connection** works
+⏸️ **Envio indexers:** Deploy using [hosted service](#-envio-hosted-service-setup) when ready
 
 ---
 
 ## 🎯 Next Steps
 
-1. **Run locally** (4 terminals above)
-2. **Deploy to Envio** (hosted service instructions above)
-3. **Test the app** at http://localhost:5173
+1. ✅ **Open the app** at http://localhost:5173
+2. ✅ **Connect MetaMask wallet** (make sure you're on Monad testnet)
+3. ⏸️ **Deploy indexers to Envio** (hosted service instructions above) when you need real portfolio data
 4. **Submit to hackathon!**
 
 **GitHub:** https://github.com/LonelyGuy-SE1/IntelliQuant
