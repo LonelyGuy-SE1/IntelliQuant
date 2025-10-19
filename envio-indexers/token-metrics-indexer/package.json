@@ -7,6 +7,6 @@
     "codegen": "envio codegen"
   },
   "dependencies": {
-    "envio": "latest"
+    "envio": "^2.28.2"
   }
 }
