@@ -5,12 +5,20 @@
 name: IntelliQuant-TokenMetrics
 description: Aggregates token health metrics from DEX data
 
-# This can reuse DEX events or query the DEX indexer's GraphQL
-# For simplicity, implement metrics calculation in backend services
-
-contracts: []
+# Minimal contract setup required by Envio (not actively used)
+# Token metrics are calculated in backend by querying DEX indexer
+contracts:
+  - name: DummyContract
+    handler: src/EventHandlers.ts
+    events:
+      - event: "Transfer(address indexed from, address indexed to, uint256 value)"
 
 networks:
   - id: 10143
     start_block: 0
-    contracts: []
+    contracts:
+      # Dummy contract - required for Envio deployment
+      # Metrics calculated in backend via GraphQL queries
+      - name: DummyContract
+        address:
+          - "0x0000000000000000000000000000000000000000"  # Null address - won't index anything

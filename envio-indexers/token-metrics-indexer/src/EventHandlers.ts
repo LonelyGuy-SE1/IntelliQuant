@@ -5,10 +5,12 @@
  * For the hackathon, token metrics are calculated in the backend
  * by querying the DEX indexer's GraphQL endpoint.
  * 
- * This file exists to satisfy Envio's deployment requirements.
+ * The DummyContract is required for Envio deployment but won't
+ * actually index any events (0x0 address doesn't emit events).
  */
 
-// No event handlers needed - metrics calculated in backend
-// by querying dex-indexer GraphQL endpoint
-
-export {};
+// Dummy handler to satisfy Envio requirements
+DummyContract.Transfer.handler(async ({ event, context }) => {
+  // This will never execute since we're watching 0x0 address
+  // Metrics are calculated in backend by querying DEX indexer GraphQL
+});
