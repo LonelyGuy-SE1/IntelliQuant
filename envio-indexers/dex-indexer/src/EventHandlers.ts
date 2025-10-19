@@ -4,6 +4,8 @@
  */
 
 import {
+  UniswapV2Pool,
+  UniswapV3Pool,
   SwapEvent,
   LiquidityEvent,
   Pool,

@@ -107,20 +107,22 @@ export async function createSmartAccount(ownerAddress = null) {
 
     // Create wallet client with MetaMask
     const walletClient = createWalletClient({
-      account: owner,
       chain: monadTestnet,
       transport: custom(window.ethereum),
     });
 
-    console.log('Creating smart account for owner:', owner);
+    // Get the account from wallet client
+    const [account] = await walletClient.getAddresses();
+
+    console.log('Creating smart account for owner:', account || owner);
 
     // Create smart account (Hybrid implementation)
     const smartAccount = await toMetaMaskSmartAccount({
       client: publicClient,
       implementation: Implementation.Hybrid,
-      deployParams: [owner, [], [], []], // Hybrid: owner, no initial passkeys
-      deploySalt: '0x', // Random salt for unique address
-      signatory: { walletClient },
+      deployParams: [account || owner, [], [], []], // Hybrid: owner, no initial passkeys
+      deploySalt: `0x${Date.now().toString(16)}`, // Unique salt based on timestamp
+      signatory: { account, walletClient },
     });
 
     smartAccountInstance = smartAccount;

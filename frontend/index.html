@@ -3,266 +3,374 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>IntelliQuant - AI-Powered Portfolio Management on Monad</title>
+    <title>IntelliQuant - AI Portfolio Management</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤖</text></svg>">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/src/styles/main.css" />
   </head>
   <body>
-    <div id="app">
-      <!-- Header -->
-      <header class="header">
-        <div class="container">
-          <div class="header-content">
-            <div class="logo">
-              <h1>IntelliQuant</h1>
-              <p class="tagline">AI-Powered Portfolio Management</p>
-            </div>
-            <div class="header-actions">
-              <span id="networkBadge" class="network-badge">Monad Testnet</span>
-              <button id="connectBtn" class="btn btn-primary">
-                Connect Wallet
-              </button>
-            </div>
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-container">
+          <div class="logo-icon">🤖</div>
+          <div class="logo-text">
+            <h1>IntelliQuant</h1>
+            <p>AI Portfolio Manager</p>
           </div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="#" class="nav-item active" data-section="dashboard">
+          <span class="nav-icon">📊</span>
+          <span class="nav-label">Dashboard</span>
+        </a>
+        <a href="#" class="nav-item" data-section="portfolio">
+          <span class="nav-icon">💼</span>
+          <span class="nav-label">Portfolio</span>
+        </a>
+        <a href="#" class="nav-item" data-section="tokens">
+          <span class="nav-icon">🪙</span>
+          <span class="nav-label">Token Analysis</span>
+        </a>
+        <a href="#" class="nav-item" data-section="delegations">
+          <span class="nav-icon">🔐</span>
+          <span class="nav-label">Delegations</span>
+        </a>
+        <a href="#" class="nav-item" data-section="recommendations">
+          <span class="nav-icon">🎯</span>
+          <span class="nav-label">AI Recommendations</span>
+        </a>
+        <a href="#" class="nav-item" data-section="transactions">
+          <span class="nav-icon">⚡</span>
+          <span class="nav-label">Transactions</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="network-status">
+          <div class="status-dot"></div>
+          <span>Monad Testnet</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Top Bar -->
+      <header class="topbar">
+        <button class="menu-toggle" id="menuToggle">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+
+        <div class="topbar-actions">
+          <div class="wallet-info" id="walletInfo" style="display: none;">
+            <div class="wallet-address" id="walletAddressDisplay"></div>
+            <button class="btn btn-outline btn-sm" id="disconnectBtn" style="display: none;">
+              Disconnect
+            </button>
+          </div>
+          <button class="btn btn-primary" id="connectWalletTopBtn">
+            Connect Wallet
+          </button>
         </div>
       </header>
 
-      <!-- Main Content -->
-      <main class="main">
-        <div class="container">
-          <!-- Connection Section -->
-          <section id="connectSection" class="section">
-            <div class="card welcome-card">
-              <h2>Welcome to IntelliQuant</h2>
-              <p>
-                Connect your MetaMask wallet to get started with AI-powered
-                portfolio management on Monad testnet.
-              </p>
-              <ul class="features-list">
-                <li>AI Token Health Scoring (0-100)</li>
-                <li>Portfolio Risk Analysis</li>
-                <li>Smart Money Tracking</li>
-                <li>Automated Rebalancing with MetaMask Smart Accounts</li>
-                <li>Gasless Transactions</li>
-              </ul>
-              <button id="connectWalletBtn" class="btn btn-lg btn-primary">
-                Connect MetaMask
-              </button>
-            </div>
-          </section>
+      <!-- Content Sections -->
+      <div class="content-wrapper">
 
-          <!-- Smart Account Section -->
-          <section id="accountSection" class="section hidden">
-            <div class="card">
-              <h2>Smart Account</h2>
-              <div id="accountStatus" class="status-grid">
-                <div class="status-item">
-                  <span class="label">EOA Address:</span>
-                  <span id="eoaAddress" class="value">-</span>
-                </div>
-                <div class="status-item">
-                  <span class="label">Smart Account:</span>
-                  <span id="smartAccountAddress" class="value">-</span>
-                </div>
-                <div class="status-item">
-                  <span class="label">Status:</span>
-                  <span id="deploymentStatus" class="value">-</span>
-                </div>
-                <div class="status-item">
-                  <span class="label">Balance:</span>
-                  <span id="accountBalance" class="value">-</span>
-                </div>
-              </div>
-              <div class="action-buttons">
-                <button id="createSmartAccountBtn" class="btn btn-secondary">
-                  Create Smart Account
-                </button>
-                <button id="refreshBalanceBtn" class="btn btn-secondary">
-                  Refresh Balance
-                </button>
+        <!-- Dashboard Section -->
+        <section class="content-section active" id="section-dashboard">
+          <div class="section-header">
+            <h2>Welcome to IntelliQuant</h2>
+            <p>AI-powered portfolio management on Monad testnet</p>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon">💰</div>
+              <div class="stat-content">
+                <span class="stat-label">Portfolio Value</span>
+                <span class="stat-value" id="totalPortfolioValue">-</span>
               </div>
             </div>
-          </section>
-
-          <!-- Token Scores Section -->
-          <section id="scoresSection" class="section hidden">
-            <div class="card">
-              <h2>Token Health Scores</h2>
-              <p>Enter token addresses to analyze (comma-separated):</p>
-              <div class="input-group">
-                <input
-                  type="text"
-                  id="tokenAddressesInput"
-                  placeholder="0x..., 0x..., 0x..."
-                  class="input"
-                />
-                <button id="analyzeTokensBtn" class="btn btn-primary">
-                  Analyze Tokens
-                </button>
-              </div>
-              <div id="tokenScoresResults" class="results">
-                <!-- Token scores will be inserted here -->
+            <div class="stat-card">
+              <div class="stat-icon">📈</div>
+              <div class="stat-content">
+                <span class="stat-label">24h Change</span>
+                <span class="stat-value stat-positive">-</span>
               </div>
             </div>
-          </section>
-
-          <!-- Portfolio Section -->
-          <section id="portfolioSection" class="section hidden">
-            <div class="card">
-              <h2>Portfolio Analysis</h2>
-              <div class="action-buttons">
-                <button id="loadPortfolioBtn" class="btn btn-primary">
-                  Load My Portfolio
-                </button>
-                <button id="analyzeRiskBtn" class="btn btn-secondary">
-                  Analyze Risk
-                </button>
-              </div>
-              <div id="portfolioResults" class="results">
-                <!-- Portfolio data will be inserted here -->
+            <div class="stat-card">
+              <div class="stat-icon">🎯</div>
+              <div class="stat-content">
+                <span class="stat-label">Active Delegations</span>
+                <span class="stat-value">0</span>
               </div>
             </div>
-          </section>
+            <div class="stat-card">
+              <div class="stat-icon">⚡</div>
+              <div class="stat-content">
+                <span class="stat-label">Transactions</span>
+                <span class="stat-value">0</span>
+              </div>
+            </div>
+          </div>
 
-          <!-- Delegations Section -->
-          <section id="delegationsSection" class="section hidden">
+          <div class="grid-2">
+            <!-- Smart Account Card -->
             <div class="card">
-              <h2>Trading Delegations</h2>
-              <p>Create delegated trading permissions with security caveats.</p>
+              <div class="card-header">
+                <h3>Smart Account</h3>
+                <span class="badge badge-green">Active</span>
+              </div>
+              <div class="card-body">
+                <div class="info-group">
+                  <label>EOA Address</label>
+                  <div class="address-display" id="eoaAddressDisplay">Not connected</div>
+                </div>
+                <div class="info-group">
+                  <label>Smart Account</label>
+                  <div class="address-display" id="smartAccountDisplay">Not created</div>
+                </div>
+                <div class="info-group">
+                  <label>Balance</label>
+                  <div class="balance-display" id="balanceDisplay">0 MON</div>
+                </div>
+                <div class="card-actions">
+                  <button class="btn btn-primary" id="createSmartAccountBtn" disabled>
+                    Create Smart Account
+                  </button>
+                  <button class="btn btn-outline" id="refreshBalanceBtn" disabled>
+                    Refresh
+                  </button>
+                </div>
+              </div>
+            </div>
 
+            <!-- Quick Actions -->
+            <div class="card">
+              <div class="card-header">
+                <h3>Quick Actions</h3>
+              </div>
+              <div class="card-body">
+                <div class="quick-actions">
+                  <button class="action-btn" data-section="tokens">
+                    <span class="action-icon">🔍</span>
+                    <span>Analyze Tokens</span>
+                  </button>
+                  <button class="action-btn" data-section="portfolio">
+                    <span class="action-icon">📊</span>
+                    <span>View Portfolio</span>
+                  </button>
+                  <button class="action-btn" data-section="delegations">
+                    <span class="action-icon">🔐</span>
+                    <span>Manage Delegations</span>
+                  </button>
+                  <button class="action-btn" data-section="recommendations">
+                    <span class="action-icon">🤖</span>
+                    <span>AI Insights</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Portfolio Section -->
+        <section class="content-section" id="section-portfolio">
+          <div class="section-header">
+            <h2>Portfolio Analysis</h2>
+            <p>Real-time portfolio tracking and risk analysis</p>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3>Holdings</h3>
+              <button class="btn btn-primary btn-sm" id="loadPortfolioBtn">Load Portfolio</button>
+            </div>
+            <div class="card-body">
+              <div id="portfolioResults" class="results-container"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Token Analysis Section -->
+        <section class="content-section" id="section-tokens">
+          <div class="section-header">
+            <h2>Token Health Analysis</h2>
+            <p>AI-powered token scoring and metrics</p>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3>Analyze Tokens</h3>
+            </div>
+            <div class="card-body">
               <div class="form-group">
-                <label for="delegateAddress"
-                  >Delegate Address (AI Agent):</label
-                >
+                <label>Token Addresses (comma-separated)</label>
+                <textarea
+                  class="input"
+                  id="tokenAddressesInput"
+                  rows="3"
+                  placeholder="0x760AfE86e5de5fa0Ee542fc7B7B713e1c5425701, 0x836047a99e11f376522b447bffb6e3495dd0637c"
+                ></textarea>
+              </div>
+              <button class="btn btn-primary" id="analyzeTokensBtn">Analyze Tokens</button>
+              <div id="tokenScoresResults" class="results-container"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Delegations Section -->
+        <section class="content-section" id="section-delegations">
+          <div class="section-header">
+            <h2>Trading Delegations</h2>
+            <p>Create secure delegations with granular permissions</p>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3>Create Delegation</h3>
+            </div>
+            <div class="card-body">
+              <div class="form-group">
+                <label>Delegate Address (AI Agent)</label>
                 <input
                   type="text"
+                  class="input"
                   id="delegateAddress"
                   placeholder="0x..."
-                  class="input"
                 />
               </div>
-
-              <div class="form-group">
-                <label for="maxTransfer">Max Native Transfer (MON):</label>
-                <input
-                  type="number"
-                  id="maxTransfer"
-                  value="5"
-                  step="0.1"
-                  class="input"
-                />
+              <div class="grid-2">
+                <div class="form-group">
+                  <label>Max Native Transfer (MON)</label>
+                  <input
+                    type="number"
+                    class="input"
+                    id="maxTransfer"
+                    value="5"
+                    step="0.1"
+                  />
+                </div>
+                <div class="form-group">
+                  <label>Max Calls</label>
+                  <input
+                    type="number"
+                    class="input"
+                    id="maxCalls"
+                    value="20"
+                  />
+                </div>
               </div>
-
-              <div class="form-group">
-                <label for="maxCalls">Max Number of Calls:</label>
-                <input type="number" id="maxCalls" value="20" class="input" />
+              <div class="card-actions">
+                <button class="btn btn-primary" id="createDelegationBtn">Create Delegation</button>
+                <button class="btn btn-outline" id="createMinimalDelegationBtn">Create Test Delegation</button>
               </div>
-
-              <div class="action-buttons">
-                <button id="createDelegationBtn" class="btn btn-primary">
-                  Create Delegation
-                </button>
-                <button
-                  id="createMinimalDelegationBtn"
-                  class="btn btn-secondary"
-                >
-                  Create Test Delegation
-                </button>
-              </div>
-
-              <div id="delegationResults" class="results">
-                <!-- Delegation results will be inserted here -->
-              </div>
+              <div id="delegationResults" class="results-container"></div>
             </div>
-          </section>
+          </div>
+        </section>
 
-          <!-- Recommendations Section -->
-          <section id="recommendationsSection" class="section hidden">
-            <div class="card">
-              <h2>AI Recommendations</h2>
-              <p>
-                Get AI-powered trading recommendations based on health scores
-                and smart money activity.
-              </p>
-              <div class="input-group">
-                <input
-                  type="text"
+        <!-- AI Recommendations Section -->
+        <section class="content-section" id="section-recommendations">
+          <div class="section-header">
+            <h2>AI Recommendations</h2>
+            <p>Smart trading suggestions powered by AI analysis</p>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3>Get Recommendations</h3>
+            </div>
+            <div class="card-body">
+              <div class="form-group">
+                <label>Token Addresses</label>
+                <textarea
+                  class="input"
                   id="recommendTokensInput"
-                  placeholder="Token addresses (comma-separated)"
-                  class="input"
-                />
-                <button id="getRecommendationsBtn" class="btn btn-primary">
-                  Get Recommendations
-                </button>
+                  rows="3"
+                  placeholder="Enter token addresses (comma-separated)"
+                ></textarea>
               </div>
-              <div id="recommendationsResults" class="results">
-                <!-- Recommendations will be inserted here -->
-              </div>
+              <button class="btn btn-primary" id="getRecommendationsBtn">Generate Recommendations</button>
+              <div id="recommendationsResults" class="results-container"></div>
             </div>
-          </section>
+          </div>
+        </section>
 
-          <!-- Test Transaction Section -->
-          <section id="testTransactionSection" class="section hidden">
-            <div class="card">
-              <h2>Test Gasless Transaction</h2>
-              <p>
-                Send a test transaction using your smart account (gasless via
-                paymaster).
-              </p>
+        <!-- Transactions Section -->
+        <section class="content-section" id="section-transactions">
+          <div class="section-header">
+            <h2>Gasless Transactions</h2>
+            <p>Send transactions using your smart account</p>
+          </div>
 
+          <div class="card">
+            <div class="card-header">
+              <h3>Send Transaction</h3>
+            </div>
+            <div class="card-body">
               <div class="form-group">
-                <label for="testRecipient">Recipient Address:</label>
+                <label>Recipient Address</label>
                 <input
                   type="text"
+                  class="input"
                   id="testRecipient"
                   placeholder="0x..."
-                  class="input"
                 />
               </div>
-
               <div class="form-group">
-                <label for="testAmount">Amount (MON):</label>
+                <label>Amount (MON)</label>
                 <input
                   type="number"
+                  class="input"
                   id="testAmount"
                   value="0.001"
                   step="0.001"
-                  class="input"
                 />
               </div>
-
-              <button id="sendTestTxBtn" class="btn btn-primary">
-                Send Gasless Transaction
-              </button>
-
-              <div id="transactionResults" class="results">
-                <!-- Transaction results will be inserted here -->
-              </div>
+              <button class="btn btn-primary" id="sendTestTxBtn">Send Gasless Transaction</button>
+              <div id="transactionResults" class="results-container"></div>
             </div>
-          </section>
-        </div>
-      </main>
+          </div>
+        </section>
 
-      <!-- Footer -->
-      <footer class="footer">
-        <div class="container">
-          <p>
-            &copy; 2025 IntelliQuant | Built for MetaMask Smart Accounts x Monad
-            x Envio Hackathon
-          </p>
-          <p>
-            Powered by MetaMask Delegation Toolkit, Envio HyperIndex, and Monad
-            Testnet
-          </p>
-        </div>
-      </footer>
+      </div>
+    </main>
 
-      <!-- Loading Overlay -->
-      <div id="loadingOverlay" class="loading-overlay hidden">
-        <div class="spinner"></div>
-        <p id="loadingMessage">Loading...</p>
+    <!-- Custom Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+      <div class="modal" id="customModal">
+        <div class="modal-header">
+          <h3 id="modalTitle">Modal Title</h3>
+          <button class="modal-close" id="modalClose">&times;</button>
+        </div>
+        <div class="modal-body" id="modalBody">
+          Modal content
+        </div>
+        <div class="modal-footer" id="modalFooter">
+          <button class="btn btn-outline" id="modalCancelBtn">Cancel</button>
+          <button class="btn btn-primary" id="modalConfirmBtn">Confirm</button>
+        </div>
       </div>
     </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+      <div class="loading-spinner"></div>
+      <p id="loadingMessage">Loading...</p>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
 
     <script type="module" src="/src/index.js"></script>
   </body>

@@ -3,13 +3,13 @@
  * Processes ERC-20 Transfer events to maintain user token balances
  */
 
-import { Transfer, UserBalance, User, Token } from "generated";
+import { ERC20Token, Transfer, UserBalance, User, Token } from "generated";
 
 /**
  * Handler for ERC-20 Transfer events
  * Updates balances for both sender and recipient
  */
-Transfer.handler(async ({ event, context }) => {
+ERC20Token.Transfer.handler(async ({ event, context }) => {
   const { from, to, value } = event.params;
   const tokenAddress = event.srcAddress; // The ERC-20 contract address
   const timestamp = event.block.timestamp;

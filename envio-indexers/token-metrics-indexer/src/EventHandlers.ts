@@ -9,6 +9,8 @@
  * actually index any events (0x0 address doesn't emit events).
  */
 
+import { DummyContract } from "generated";
+
 // Dummy handler to satisfy Envio requirements
 DummyContract.Transfer.handler(async ({ event, context }) => {
   // This will never execute since we're watching 0x0 address
