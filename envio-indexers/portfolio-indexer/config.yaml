@@ -11,9 +11,6 @@ contracts:
     handler: src/EventHandlers.ts
     events:
       - event: "Transfer(address indexed from, address indexed to, uint256 value)"
-    # Example ABI - covers standard ERC-20 Transfer event
-    abi:
-      - event: "Transfer(address indexed from, address indexed to, uint256 value)"
 
 # Network configuration
 networks:
