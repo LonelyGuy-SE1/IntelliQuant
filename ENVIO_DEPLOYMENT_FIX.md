@@ -194,6 +194,10 @@ export {};
 - **Commit 7**: `4d29690` - "fix(envio): Rename 'type' to 'eventType' in LiquidityEvent schema" ✅ **FIXES DEX INDEXER**
 - **Commit 8**: `afd1955` - "docs(envio): Document reserved keyword fix for dex-indexer"
 - **Commit 9**: `8db325c` - "fix(envio): Add minimal EventHandlers.ts to token-metrics-indexer" ✅ **FIXES TOKEN METRICS**
+- **Commit 10**: `b0bc379` - "fix(envio): Enhance token-metrics schema with actual metric fields"
+- **Commit 11**: `192d9cd` - "docs(envio): Document schema enhancement for token-metrics"
+- **Commit 12**: `5c9a0ba` - "fix(envio): Add dummy contract to token-metrics config for deployment"
+- **Commit 13**: `a2458da` - "fix(envio): Add missing contract imports to EventHandlers" ⚠️ **CRITICAL FIX**
 - **Branch**: `envio` (pushed to origin)
 - **Date**: October 20, 2025
 
@@ -228,6 +232,13 @@ All 3 indexers should now deploy successfully:
 - **OLD FORMAT (DEPRECATED)**: Separate `abi:` field under each contract
 - **NEW FORMAT (REQUIRED)**: Events listed only under `events:` field
 - The `abi` field was likely used in older Envio versions but is no longer supported
+
+### Handler Syntax Requirements:
+
+- **INCORRECT**: `import { Transfer } from "generated"; Transfer.handler(...)`
+- **CORRECT**: `import { ERC20Token, Transfer } from "generated"; ERC20Token.Transfer.handler(...)`
+- The contract name MUST be imported and used to scope the event handler
+- Reference: https://github.com/dhruv457457/RevokeMe/blob/main/envioIndexer/src/EventHandlers.ts
 - Attempting to use `abi:` results in deserialization error: `unknown field 'abi'`
 
 ### Indexer Configuration:
