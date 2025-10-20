@@ -97,7 +97,7 @@ export async function connectWallet() {
  */
 export async function createSmartAccount(ownerAddress = null) {
   // Version marker for cache debugging
-  console.log('🔧 Smart Account Service v3.0 - Fixed walletClient property');
+  console.log('🔧 Smart Account Service v4.0 - Fixed signer parameter (not signatory)');
 
   try {
     const publicClient = getPublicClient();
@@ -133,17 +133,14 @@ export async function createSmartAccount(ownerAddress = null) {
       accountAddress: walletClient.account?.address
     });
 
-    // Create signatory object with proper structure
-    // The account should be the account object from walletClient, not just the address
-    const signatory = {
-      account: walletClient.account,
+    // Create signer object with proper structure
+    // According to MetaMask docs, use 'signer' not 'signatory'
+    const signer = {
       walletClient: walletClient
     };
 
-    console.log('✅ Signatory ready:', {
-      hasAccount: !!signatory.account,
-      hasWalletClient: !!signatory.walletClient,
-      accountType: typeof signatory.account
+    console.log('✅ Signer ready:', {
+      hasWalletClient: !!signer.walletClient,
     });
 
     // Create smart account (Hybrid implementation)
@@ -152,7 +149,7 @@ export async function createSmartAccount(ownerAddress = null) {
       implementation: Implementation.Hybrid,
       deployParams: [accountAddress, [], [], []], // Hybrid: owner, no initial passkeys
       deploySalt: `0x${Date.now().toString(16)}`, // Unique salt based on timestamp
-      signatory: signatory,
+      signer: signer,
     });
 
     smartAccountInstance = smartAccount;

@@ -1,9 +1,10 @@
 /**
  * AI Portfolio Analysis Service
- * Analyzes portfolio composition and provides intelligent insights
+ * Uses Crestal Network Agent for intelligent insights
  */
 
 import envioClient from './envio-client.js';
+import crestalAI from './ai-crestal.js';
 
 /**
  * Generate AI-powered portfolio insights
@@ -12,58 +13,16 @@ import envioClient from './envio-client.js';
  */
 export async function analyzePortfolioWithAI(userAddress) {
   try {
-    // Fetch portfolio data
+    // Fetch portfolio data from Envio
     const portfolio = await envioClient.getUserPortfolio(userAddress);
 
     if (!portfolio || !portfolio.balances || portfolio.balances.length === 0) {
-      return {
-        summary: "No portfolio detected. Start by acquiring some tokens on Monad testnet!",
-        riskLevel: "unknown",
-        diversification: 0,
-        insights: [
-          "💡 Your wallet is empty. Consider acquiring some tokens to get started.",
-          "🎯 A well-diversified portfolio typically holds 3-8 different assets.",
-          "🛡️ Always research tokens before investing."
-        ],
-        recommendations: [
-          "Acquire WMON (Wrapped MON) as a base asset",
-          "Consider adding 2-3 other tokens for diversification",
-          "Monitor market conditions on DEX pools"
-        ],
-        metrics: {
-          totalTokens: 0,
-          concentration: 0,
-          topHolding: null
-        }
-      };
+      return generateEmptyPortfolioInsights();
     }
 
-    // Calculate portfolio metrics
-    const metrics = calculatePortfolioMetrics(portfolio.balances);
-
-    // Generate insights based on metrics
-    const insights = generateInsights(metrics, portfolio.balances);
-
-    // Generate recommendations
-    const recommendations = generateRecommendations(metrics, portfolio.balances);
-
-    // Determine overall risk level
-    const riskLevel = determineRiskLevel(metrics);
-
-    return {
-      summary: generateSummary(metrics, riskLevel),
-      riskLevel,
-      diversification: metrics.diversificationScore,
-      insights,
-      recommendations,
-      metrics: {
-        totalTokens: portfolio.balances.length,
-        concentration: metrics.concentration,
-        topHolding: metrics.topHolding,
-        largestPosition: metrics.largestPositionPercent
-      },
-      timestamp: Date.now()
-    };
+    // Use Crestal Agent for analysis
+    console.log('🤖 Using Crestal AI Agent');
+    return await crestalAI.analyzePortfolioWithCrestal(portfolio);
 
   } catch (error) {
     console.error('AI analysis error:', error);
@@ -228,6 +187,32 @@ function generateSummary(metrics, riskLevel) {
     (riskLevel === "high" ? "Consider rebalancing to reduce concentration." :
      riskLevel === "medium" ? "Moderate risk profile - monitor closely." :
      "Well-balanced portfolio structure.");
+}
+
+function generateEmptyPortfolioInsights() {
+  return {
+    summary: "No portfolio detected. Start by acquiring some tokens on Monad testnet!",
+    riskLevel: "unknown",
+    diversification: 0,
+    insights: [
+      "💡 Your wallet is empty. Consider acquiring some tokens to get started.",
+      "🎯 A well-diversified portfolio typically holds 3-8 different assets.",
+      "🛡️ Always research tokens before investing."
+    ],
+    recommendations: [
+      "Acquire WMON (Wrapped MON) as a base asset",
+      "Consider adding 2-3 other tokens for diversification",
+      "Monitor market conditions on DEX pools"
+    ],
+    metrics: {
+      totalTokens: 0,
+      concentration: 0,
+      topHolding: null
+    },
+    aiPowered: false,
+    provider: 'local',
+    timestamp: Date.now()
+  };
 }
 
 export default {

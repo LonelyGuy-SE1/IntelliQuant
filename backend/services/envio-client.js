@@ -9,8 +9,8 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 // Initialize GraphQL clients for each indexer
-const portfolioClient = new GraphQLClient(process.env.ENVIO_PORTFOLIO_ENDPOINT || 'http://localhost:8081/v1/graphql');
-const dexClient = new GraphQLClient(process.env.ENVIO_DEX_ENDPOINT || 'http://localhost:8082/v1/graphql');
+const portfolioClient = new GraphQLClient(process.env.ENVIO_PORTFOLIO_ENDPOINT || 'http://localhost:8080/v1/graphql');
+const dexClient = new GraphQLClient(process.env.ENVIO_DEX_ENDPOINT || 'http://localhost:8080/v1/graphql');
 
 /**
  * Get user portfolio balances
@@ -39,8 +39,8 @@ export async function getUserPortfolio(address) {
     const data = await portfolioClient.request(query, { address: address.toLowerCase() });
     return data.User[0] || null;
   } catch (error) {
-    console.error('Error fetching portfolio (Envio may not be running):', error.message);
-    return null; // Return null instead of throwing when Envio is unavailable
+    console.error('Error fetching portfolio:', error.message);
+    throw error;
   }
 }
 
@@ -73,8 +73,8 @@ export async function getPoolData(poolAddress) {
     const data = await dexClient.request(query, { poolAddress: poolAddress.toLowerCase() });
     return data.Pool[0] || null;
   } catch (error) {
-    console.error('Error fetching pool data (Envio may not be running):', error.message);
-    return null; // Return null instead of throwing when Envio is unavailable
+    console.error('Error fetching pool data:', error.message);
+    throw error;
   }
 }
 
