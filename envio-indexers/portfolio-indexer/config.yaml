@@ -8,7 +8,7 @@ description: Indexes token transfers to track user portfolio balances on Monad t
 # Add all ERC-20 tokens you want to track
 contracts:
   - name: ERC20Token
-    handler: src/EventHandlers.ts
+    handler: src/EventHandlers.js
     events:
       - event: "Transfer(address indexed from, address indexed to, uint256 value)"
 
