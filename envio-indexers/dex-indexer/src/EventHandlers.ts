@@ -1,17 +1,9 @@
 /**
  * DEX Indexer Event Handlers
  * Processes swap and liquidity events from DEX pools
+ *
+ * Note: UniswapV2Pool and UniswapV3Pool are injected by Envio (no imports needed)
  */
-
-import {
-  UniswapV2Pool,
-  UniswapV3Pool,
-  SwapEvent,
-  LiquidityEvent,
-  Pool,
-  PoolHourlySnapshot,
-  SyncEvent,
-} from "generated";
 
 /**
  * Handler for Uniswap V2 Swap events
@@ -23,7 +15,7 @@ UniswapV2Pool.Swap.handler(async ({ event, context }: any) => {
   const timestamp = event.block.timestamp;
 
   // Create swap record
-  const swapEntity: SwapEvent = {
+  const swapEntity = {
     id: `${event.transaction.hash}-${event.logIndex}`,
     pool: poolAddress,
     sender: sender,
@@ -71,7 +63,7 @@ UniswapV2Pool.Mint.handler(async ({ event, context }: any) => {
   const poolAddress = event.srcAddress;
   const timestamp = event.block.timestamp;
 
-  const liquidityEntity: LiquidityEvent = {
+  const liquidityEntity = {
     id: `${event.transaction.hash}-${event.logIndex}`,
     pool: poolAddress,
     eventType: "MINT",
@@ -101,7 +93,7 @@ UniswapV2Pool.Burn.handler(async ({ event, context }: any) => {
   const poolAddress = event.srcAddress;
   const timestamp = event.block.timestamp;
 
-  const liquidityEntity: LiquidityEvent = {
+  const liquidityEntity = {
     id: `${event.transaction.hash}-${event.logIndex}`,
     pool: poolAddress,
     eventType: "BURN",
@@ -132,7 +124,7 @@ UniswapV2Pool.Sync.handler(async ({ event, context }: any) => {
   const timestamp = event.block.timestamp;
 
   // Record sync event
-  const syncEntity: SyncEvent = {
+  const syncEntity = {
     id: `${event.transaction.hash}-${event.logIndex}`,
     pool: poolAddress,
     reserve0: BigInt(reserve0),
@@ -169,7 +161,7 @@ UniswapV3Pool.Swap.handler(async ({ event, context }: any) => {
   const abs0 = amount0 < 0n ? -amount0 : amount0;
   const abs1 = amount1 < 0n ? -amount1 : amount1;
 
-  const swapEntity: SwapEvent = {
+  const swapEntity = {
     id: `${event.transaction.hash}-${event.logIndex}`,
     pool: poolAddress,
     sender: sender,
@@ -241,7 +233,7 @@ async function updatePoolStats(
 /**
  * Creates a default pool entity
  */
-function createDefaultPool(poolAddress: string, timestamp: bigint): Pool {
+function createDefaultPool(poolAddress: string, timestamp: bigint) {
   return {
     id: poolAddress,
     address: poolAddress,

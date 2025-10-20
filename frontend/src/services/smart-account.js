@@ -115,41 +115,42 @@ export async function createSmartAccount(ownerAddress = null) {
       throw new Error('MetaMask not found. Please install MetaMask extension.');
     }
 
-    // Create wallet client with MetaMask
+    // Get the account address first
+    const [accountAddress] = await window.ethereum.request({ method: 'eth_requestAccounts' });
+
+    console.log('✅ Account address:', accountAddress);
+
+    // Create wallet client with MetaMask and set account
     const walletClient = createWalletClient({
+      account: accountAddress,
       chain: monadTestnet,
       transport: custom(window.ethereum),
     });
 
-    console.log('✅ Wallet client created:', !!walletClient);
-
-    // Validate walletClient was created
-    if (!walletClient) {
-      throw new Error('Failed to create wallet client. Please check MetaMask connection.');
-    }
-
-    // Get the account from wallet client
-    const [accountAddress] = await walletClient.getAddresses();
-
-    console.log('✅ Creating smart account for owner:', accountAddress || owner);
+    console.log('✅ Wallet client created:', {
+      hasClient: !!walletClient,
+      hasAccount: !!walletClient.account,
+      accountAddress: walletClient.account?.address
+    });
 
     // Create signatory object with proper structure
+    // The account should be the account object from walletClient, not just the address
     const signatory = {
-      account: accountAddress,
+      account: walletClient.account,
       walletClient: walletClient
     };
 
-    console.log('✅ Signatory object:', {
+    console.log('✅ Signatory ready:', {
       hasAccount: !!signatory.account,
       hasWalletClient: !!signatory.walletClient,
-      walletClientType: typeof signatory.walletClient
+      accountType: typeof signatory.account
     });
 
     // Create smart account (Hybrid implementation)
     const smartAccount = await toMetaMaskSmartAccount({
       client: publicClient,
       implementation: Implementation.Hybrid,
-      deployParams: [accountAddress || owner, [], [], []], // Hybrid: owner, no initial passkeys
+      deployParams: [accountAddress, [], [], []], // Hybrid: owner, no initial passkeys
       deploySalt: `0x${Date.now().toString(16)}`, // Unique salt based on timestamp
       signatory: signatory,
     });
