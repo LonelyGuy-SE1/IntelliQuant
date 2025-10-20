@@ -1,3 +1,5 @@
+import { ERC20Token } from "generated";
+
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
 ERC20Token.Transfer.handler(async ({ event, context }) => {
@@ -34,7 +36,14 @@ ERC20Token.Transfer.handler(async ({ event, context }) => {
   context.Token.set(tokenEntity);
 
   if (from !== ZERO_ADDRESS) {
-    await updateUserBalance(context, from, tokenAddress, value, "subtract", timestamp);
+    await updateUserBalance(
+      context,
+      from,
+      tokenAddress,
+      value,
+      "subtract",
+      timestamp
+    );
     await updateUser(context, from, timestamp);
   }
 
@@ -44,7 +53,14 @@ ERC20Token.Transfer.handler(async ({ event, context }) => {
   }
 });
 
-async function updateUserBalance(context, userAddress, tokenAddress, amount, operation, timestamp) {
+async function updateUserBalance(
+  context,
+  userAddress,
+  tokenAddress,
+  amount,
+  operation,
+  timestamp
+) {
   const balanceId = `${userAddress}-${tokenAddress}`;
   let userBalance = await context.UserBalance.get(balanceId);
 
