@@ -1,8 +1,9 @@
+// @ts-ignore - generated module is created by Envio codegen
 import { ERC20Token } from "generated";
 
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
-ERC20Token.Transfer.handler(async ({ event, context }) => {
+ERC20Token.Transfer.handler(async ({ event, context }: any) => {
   const { from, to, value } = event.params;
   const tokenAddress = event.srcAddress;
   const timestamp = BigInt(event.block.timestamp);
@@ -54,12 +55,12 @@ ERC20Token.Transfer.handler(async ({ event, context }) => {
 });
 
 async function updateUserBalance(
-  context,
-  userAddress,
-  tokenAddress,
-  amount,
-  operation,
-  timestamp
+  context: any,
+  userAddress: any,
+  tokenAddress: any,
+  amount: any,
+  operation: any,
+  timestamp: any
 ) {
   const balanceId = `${userAddress}-${tokenAddress}`;
   let userBalance = await context.UserBalance.get(balanceId);
@@ -86,7 +87,7 @@ async function updateUserBalance(
   context.UserBalance.set(userBalance);
 }
 
-async function updateUser(context, userAddress, timestamp) {
+async function updateUser(context: any, userAddress: any, timestamp: any) {
   let user = await context.User.get(userAddress);
 
   if (!user) {
