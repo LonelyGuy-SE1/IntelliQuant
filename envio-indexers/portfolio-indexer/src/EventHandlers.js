@@ -3,8 +3,8 @@
  * Processes ERC-20 Transfer events to maintain user token balances
  */
 
-// Handler is called by Envio's generated code
-exports.ERC20TokenTransferHandler = async ({ event, context }) => {
+// Envio expects: ContractName_EventName_handler
+ERC20Token_Transfer_handler = async ({ event, context }) => {
   const { from, to, value } = event.params;
   const tokenAddress = event.srcAddress;
   const timestamp = event.block.timestamp;

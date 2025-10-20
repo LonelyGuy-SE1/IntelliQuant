@@ -63,7 +63,7 @@ async function createChat() {
         Authorization: `Bearer ${CRESTAL_API_KEY}`,
         "Content-Type": "application/json",
       },
-      timeout: 10000, // 10 second timeout
+      timeout: 10000,
     }
   );
   return response.data.id;
@@ -78,10 +78,17 @@ async function sendMessage(chatId, message) {
         Authorization: `Bearer ${CRESTAL_API_KEY}`,
         "Content-Type": "application/json",
       },
-      timeout: 15000, // 15 second timeout
+      timeout: 30000,
     }
   );
-  return response.data.response;
+  
+  // Handle response - check if it's streaming or direct
+  if (response.data.response) {
+    return response.data.response;
+  }
+  
+  // If no direct response, try to extract from data
+  return response.data.message || JSON.stringify(response.data);
 }
 
 function buildPortfolioPrompt(portfolio) {
