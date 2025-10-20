@@ -62,7 +62,7 @@ async function createChat() {
     },
     body: JSON.stringify({}),
   });
-  
+
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
   const data = await response.json();
   return data.id;
@@ -75,12 +75,34 @@ async function sendMessage(chatId, message) {
       Authorization: `Bearer ${CRESTAL_API_KEY}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ message, stream: false }),
+    body: JSON.stringify({ message, stream: true }),
   });
-  
+
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
-  const data = await response.json();
-  return data.response || data.message || JSON.stringify(data);
+
+  // Handle streaming response like popup.js
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder("utf-8");
+  let fullText = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+
+    const chunk = decoder.decode(value);
+    const lines = chunk.split("\n").filter((line) => line.trim());
+
+    for (const line of lines) {
+      try {
+        const json = JSON.parse(line);
+        if (json.content) fullText += json.content;
+      } catch (e) {
+        // Skip non-JSON lines
+      }
+    }
+  }
+
+  return fullText || "Analysis complete";
 }
 
 function buildPortfolioPrompt(portfolio) {
