@@ -1,10 +1,10 @@
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
-// Import from generated files
-import { ERC20Token as ERC20 } from "../generated/src/Handlers.gen";
+// Import from generated package (Envio creates this)
+import { ERC20Token } from "generated";
 
 // Register handler with wildcard mode to index ALL Transfer events on Monad
-ERC20.Transfer.handler(
+ERC20Token.Transfer.handler(
   async ({ event, context }) => {
     const { from, to, value } = event.params;
     const tokenAddress = event.srcAddress;
@@ -62,7 +62,7 @@ ERC20.Transfer.handler(
       await updateUser(context, to, timestamp);
     }
   },
-  { wildcard: true }  // ← Enable wildcard indexing
+  { wildcard: true } // ← Enable wildcard indexing
 );
 
 async function updateUserBalance(
