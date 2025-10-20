@@ -240,4 +240,6 @@ function generateEmptyResponse() {
 export default {
   analyzePortfolioWithCrestal,
   generateCrestalRecommendations,
+  createChat,
+  sendMessage,
 };

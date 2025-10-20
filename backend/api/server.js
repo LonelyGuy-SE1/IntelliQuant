@@ -11,6 +11,7 @@ import dotenv from "dotenv";
 import tokensRouter from "./routes/tokens.js";
 import portfolioRouter from "./routes/portfolio.js";
 import recommendationsRouter from "./routes/recommendations.js";
+import aiRouter from "./routes/ai.js";
 
 dotenv.config();
 
@@ -37,7 +38,7 @@ app.get("/health", (req, res) => {
   });
 });
 
-// Test AI endpoint
+// Test AI endpoint (GET)
 app.get("/api/ai/test", async (req, res) => {
   try {
     const { analyzePortfolioWithCrestal } = await import(
@@ -58,18 +59,47 @@ app.get("/api/ai/test", async (req, res) => {
         },
       ],
     };
-
-    const analysis = await analyzePortfolioWithCrestal(testPortfolio);
-    res.json({
-      success: true,
-      message: "Crestal AI Agent is working!",
-      analysis,
-    });
+    const result = await analyzePortfolioWithCrestal(testPortfolio);
+    res.json({ success: true, analysis: result });
   } catch (error) {
+    console.error("AI test error:", error);
     res.status(500).json({
       success: false,
       error: error.message,
       message: "Crestal API key may be invalid or network issue",
+    });
+  }
+});
+
+// Test AI endpoint (POST) for chatbox
+app.post("/api/ai/test", async (req, res) => {
+  try {
+    const aiCrestal = await import("../services/ai-crestal.js");
+    const { prompt } = req.body;
+    
+    if (!prompt) {
+      return res.status(400).json({
+        success: false,
+        error: "Prompt is required"
+      });
+    }
+
+    console.log("Crestal chat request:", prompt);
+    const chatId = await aiCrestal.default.createChat();
+    const response = await aiCrestal.default.sendMessage(chatId, prompt);
+
+    res.json({
+      success: true,
+      chatId: chatId,
+      analysis: response,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error("Crestal chat error:", error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      fallback: "Crestal API unavailable - check API key and network"
     });
   }
 });
