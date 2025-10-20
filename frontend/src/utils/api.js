@@ -7,7 +7,7 @@
 const API_URL =
   import.meta && import.meta.env && import.meta.env.VITE_API_URL
     ? import.meta.env.VITE_API_URL
-    : "http://localhost:3000";
+    : "http://localhost:3001"; // Backend runs on port 3001!
 
 /**
  * Generic API request
