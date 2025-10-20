@@ -1,10 +1,10 @@
 /**
- * Portfolio Indexer Event Handlers
+ * Portfolio Indexer Event Handlers  
  * Processes ERC-20 Transfer events to maintain user token balances
  */
 
-// Envio expects: ContractName_EventName_handler
-ERC20Token_Transfer_handler = async ({ event, context }) => {
+// Export handler for Envio's RegisterHandlers
+exports.ERC20Token_Transfer_handler = async ({ event, context }) => {
   const { from, to, value } = event.params;
   const tokenAddress = event.srcAddress;
   const timestamp = event.block.timestamp;
