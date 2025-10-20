@@ -8,21 +8,21 @@ module.exports = {
     settings: {
       optimizer: {
         enabled: true,
-        runs: 200
-      }
-    }
+        runs: 200,
+      },
+    },
   },
   networks: {
     monadTestnet: {
       url: process.env.MONAD_RPC_URL || "https://testnet-rpc.monad.xyz",
       chainId: 10143,
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
-      gasPrice: "auto"
-    }
+      gasPrice: "auto",
+    },
   },
   etherscan: {
     apiKey: {
-      monadTestnet: process.env.MONAD_API_KEY || "no-api-key-needed"
+      monadTestnet: process.env.MONAD_API_KEY || "no-api-key-needed",
     },
     customChains: [
       {
@@ -30,9 +30,9 @@ module.exports = {
         chainId: 10143,
         urls: {
           apiURL: "https://testnet.monadexplorer.com/api",
-          browserURL: "https://testnet.monadexplorer.com"
-        }
-      }
-    ]
-  }
+          browserURL: "https://testnet.monadexplorer.com",
+        },
+      },
+    ],
+  },
 };
