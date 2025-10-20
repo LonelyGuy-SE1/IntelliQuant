@@ -3,7 +3,6 @@
  * API Docs: https://open.service.crestal.network/v1/redoc
  */
 
-import axios from "axios";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -55,40 +54,33 @@ export async function generateCrestalRecommendations(
 }
 
 async function createChat() {
-  const response = await axios.post(
-    `${CRESTAL_BASE_URL}/chats`,
-    {},
-    {
-      headers: {
-        Authorization: `Bearer ${CRESTAL_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      timeout: 10000,
-    }
-  );
-  return response.data.id;
+  const response = await fetch(`${CRESTAL_BASE_URL}/chats`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${CRESTAL_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({}),
+  });
+  
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  const data = await response.json();
+  return data.id;
 }
 
 async function sendMessage(chatId, message) {
-  const response = await axios.post(
-    `${CRESTAL_BASE_URL}/chats/${chatId}/messages`,
-    { message, stream: false },
-    {
-      headers: {
-        Authorization: `Bearer ${CRESTAL_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      timeout: 30000,
-    }
-  );
+  const response = await fetch(`${CRESTAL_BASE_URL}/chats/${chatId}/messages`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${CRESTAL_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ message, stream: false }),
+  });
   
-  // Handle response - check if it's streaming or direct
-  if (response.data.response) {
-    return response.data.response;
-  }
-  
-  // If no direct response, try to extract from data
-  return response.data.message || JSON.stringify(response.data);
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  const data = await response.json();
+  return data.response || data.message || JSON.stringify(data);
 }
 
 function buildPortfolioPrompt(portfolio) {

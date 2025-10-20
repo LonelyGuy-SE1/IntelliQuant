@@ -3,8 +3,10 @@
  * Processes ERC-20 Transfer events to maintain user token balances
  */
 
-// Export handler for Envio's RegisterHandlers
-exports.ERC20Token_Transfer_handler = async ({ event, context }) => {
+// Envio handler: Must match contract name "ERC20Token" + event "Transfer"
+ERC20Token = {
+  Transfer: {
+    handler: async ({ event, context }) => {
   const { from, to, value } = event.params;
   const tokenAddress = event.srcAddress;
   const timestamp = event.block.timestamp;
@@ -54,6 +56,8 @@ exports.ERC20Token_Transfer_handler = async ({ event, context }) => {
   if (to !== ZERO_ADDRESS) {
     await updateUserBalance(context, to, tokenAddress, value, "add", timestamp);
     await updateUser(context, to, timestamp);
+  }
+    }
   }
 };
 
