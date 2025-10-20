@@ -12,7 +12,7 @@
 import { DummyContract } from "generated";
 
 // Dummy handler to satisfy Envio requirements
-DummyContract.Transfer.handler(async ({ event, context }) => {
-  // This will never execute since we're watching 0x0 address
+DummyContract.Transfer.handler(async ({ event, context }: { event: any; context: any }) => {
+  // This will never execute since we're watching WMON address minimally
   // Metrics are calculated in backend by querying DEX indexer GraphQL
 });

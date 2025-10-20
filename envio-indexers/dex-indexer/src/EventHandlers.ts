@@ -16,7 +16,7 @@ import {
 /**
  * Handler for Uniswap V2 Swap events
  */
-UniswapV2Pool.Swap.handler(async ({ event, context }) => {
+UniswapV2Pool.Swap.handler(async ({ event, context }: any) => {
   const { sender, amount0In, amount1In, amount0Out, amount1Out, to } =
     event.params;
   const poolAddress = event.srcAddress;
@@ -66,7 +66,7 @@ UniswapV2Pool.Swap.handler(async ({ event, context }) => {
 /**
  * Handler for Uniswap V2 Mint events (liquidity add)
  */
-UniswapV2Pool.Mint.handler(async ({ event, context }) => {
+UniswapV2Pool.Mint.handler(async ({ event, context }: any) => {
   const { sender, amount0, amount1 } = event.params;
   const poolAddress = event.srcAddress;
   const timestamp = event.block.timestamp;
@@ -96,7 +96,7 @@ UniswapV2Pool.Mint.handler(async ({ event, context }) => {
 /**
  * Handler for Uniswap V2 Burn events (liquidity remove)
  */
-UniswapV2Pool.Burn.handler(async ({ event, context }) => {
+UniswapV2Pool.Burn.handler(async ({ event, context }: any) => {
   const { sender, amount0, amount1, to } = event.params;
   const poolAddress = event.srcAddress;
   const timestamp = event.block.timestamp;
@@ -126,7 +126,7 @@ UniswapV2Pool.Burn.handler(async ({ event, context }) => {
 /**
  * Handler for Uniswap V2 Sync events (reserve updates)
  */
-UniswapV2Pool.Sync.handler(async ({ event, context }) => {
+UniswapV2Pool.Sync.handler(async ({ event, context }: any) => {
   const { reserve0, reserve1 } = event.params;
   const poolAddress = event.srcAddress;
   const timestamp = event.block.timestamp;
@@ -159,7 +159,7 @@ UniswapV2Pool.Sync.handler(async ({ event, context }) => {
 /**
  * Handler for Uniswap V3 Swap events
  */
-UniswapV3Pool.Swap.handler(async ({ event, context }) => {
+UniswapV3Pool.Swap.handler(async ({ event, context }: any) => {
   const { sender, recipient, amount0, amount1, sqrtPriceX96, liquidity, tick } =
     event.params;
   const poolAddress = event.srcAddress;
