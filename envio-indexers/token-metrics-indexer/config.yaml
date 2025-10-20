@@ -17,8 +17,8 @@ networks:
   - id: 10143
     start_block: 0
     contracts:
-      # Dummy contract - required for Envio deployment
+      # Using real WMON contract address instead of zero address
       # Metrics calculated in backend via GraphQL queries
       - name: DummyContract
         address:
-          - "0x0000000000000000000000000000000000000000" # Null address - won't index anything
+          - "0x760AfE86e5de5fa0Ee542fc7B7B713e1c5425701" # WMON token - minimal indexing
