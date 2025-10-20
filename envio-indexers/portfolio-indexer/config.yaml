@@ -12,8 +12,8 @@ contracts:
 
 # Networks to index
 networks:
-  - id: 10143  # Monad Testnet
-    start_block: 7800000  # Recent block to avoid scanning empty history
+  - id: 10143 # Monad Testnet
+    start_block: 7800000 # Recent block to avoid scanning empty history
     contracts:
       - name: ERC20Token
         # No specific addresses needed for wildcard mode

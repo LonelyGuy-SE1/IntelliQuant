@@ -1,7 +1,7 @@
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
-// Import from the generated folder that Envio creates
-import { ERC20Token } from "../generated/src/Handlers.gen.js";
+// Import from the generated index
+import { ERC20Token } from "../generated/index.js";
 
 // Register handler with wildcard mode to index ALL Transfer events on Monad
 ERC20Token.Transfer.handler(
