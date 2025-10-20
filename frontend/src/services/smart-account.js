@@ -125,7 +125,7 @@ export async function createSmartAccount(ownerAddress = null) {
       deploySalt: `0x${Date.now().toString(16)}`, // Unique salt based on timestamp
       signatory: {
         account: accountAddress,
-        client: walletClient
+        walletClient: walletClient
       },
     });
 
