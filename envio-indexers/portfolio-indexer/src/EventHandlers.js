@@ -1,33 +1,22 @@
-/**
- * Portfolio Indexer Event Handlers  
- * Processes ERC-20 Transfer events to maintain user token balances
- */
-
-// Envio handler: Must match contract name "ERC20Token" + event "Transfer"
-ERC20Token = {
-  Transfer: {
-    handler: async ({ event, context }) => {
+ERC20Token.Transfer.handler(async ({ event, context }) => {
   const { from, to, value } = event.params;
   const tokenAddress = event.srcAddress;
   const timestamp = event.block.timestamp;
   const blockNumber = event.block.number;
 
-  // Create transfer record
   const transferEntity = {
     id: `${event.transaction.hash}-${event.logIndex}`,
-    from: from,
-    to: to,
-    value: value,
-    tokenAddress: tokenAddress,
-    tokenName: undefined,
-    timestamp: timestamp,
+    from,
+    to,
+    value,
+    tokenAddress,
+    timestamp,
     transactionHash: event.transaction.hash,
-    blockNumber: blockNumber,
+    blockNumber,
   };
 
   context.Transfer.set(transferEntity);
 
-  // Update or create Token entity
   let tokenEntity = await context.Token.get(tokenAddress);
   if (!tokenEntity) {
     tokenEntity = {
@@ -46,38 +35,26 @@ ERC20Token = {
 
   const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
-  // Update sender balance (if not minting)
   if (from !== ZERO_ADDRESS) {
     await updateUserBalance(context, from, tokenAddress, value, "subtract", timestamp);
     await updateUser(context, from, timestamp);
   }
 
-  // Update recipient balance (if not burning)
   if (to !== ZERO_ADDRESS) {
     await updateUserBalance(context, to, tokenAddress, value, "add", timestamp);
     await updateUser(context, to, timestamp);
   }
-    }
-  }
-};
+});
 
-async function updateUserBalance(
-  context,
-  userAddress,
-  tokenAddress,
-  amount,
-  operation,
-  timestamp
-) {
+async function updateUserBalance(context, userAddress, tokenAddress, amount, operation, timestamp) {
   const balanceId = `${userAddress}-${tokenAddress}`;
   let userBalance = await context.UserBalance.get(balanceId);
 
   if (!userBalance) {
     userBalance = {
       id: balanceId,
-      userAddress: userAddress,
-      tokenAddress: tokenAddress,
-      token: undefined,
+      userAddress,
+      tokenAddress,
       balance: 0n,
       transferCount: 0,
       lastUpdated: timestamp,
