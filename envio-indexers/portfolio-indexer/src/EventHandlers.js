@@ -1,8 +1,7 @@
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
-// Envio injects ERC20Token globally after codegen
-if (typeof ERC20Token !== 'undefined') {
-  ERC20Token.Transfer.handler(async ({ event, context }) => {
+// Envio injects ERC20Token globally - handler must be at top level
+ERC20Token.Transfer.handler(async ({ event, context }) => {
     const { from, to, value } = event.params;
     const tokenAddress = event.srcAddress;
     const timestamp = BigInt(event.block.timestamp);
@@ -58,8 +57,7 @@ if (typeof ERC20Token !== 'undefined') {
       );
       await updateUser(context, to, timestamp);
     }
-  });
-}
+});
 
 async function updateUserBalance(
   context,
