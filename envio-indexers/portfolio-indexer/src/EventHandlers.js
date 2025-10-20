@@ -1,6 +1,7 @@
+const { ERC20Token } = require("generated");
+
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
-// No imports needed - Envio injects contract objects globally
 ERC20Token.Transfer.handlerWithLoader({
   loader: async ({ event, context }) => {
     // Preload any data needed
