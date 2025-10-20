@@ -3,7 +3,10 @@
  * Processes ERC-20 Transfer events to maintain user token balances
  */
 
-ERC20Token.Transfer.handler(async ({ event, context }) => {
+module.exports = {
+  ERC20Token: {
+    Transfer: {
+      handler: async ({ event, context }) => {
   const { from, to, value } = event.params;
   const tokenAddress = event.srcAddress;
   const timestamp = event.block.timestamp;
@@ -54,7 +57,10 @@ ERC20Token.Transfer.handler(async ({ event, context }) => {
     await updateUserBalance(context, to, tokenAddress, value, "add", timestamp);
     await updateUser(context, to, timestamp);
   }
-});
+      },
+    },
+  },
+};
 
 async function updateUserBalance(
   context,
