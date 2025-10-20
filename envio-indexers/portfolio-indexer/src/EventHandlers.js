@@ -3,10 +3,8 @@
  * Processes ERC-20 Transfer events to maintain user token balances
  */
 
-module.exports = {
-  ERC20Token: {
-    Transfer: {
-      handler: async ({ event, context }) => {
+// Handler is called by Envio's generated code
+exports.ERC20TokenTransferHandler = async ({ event, context }) => {
   const { from, to, value } = event.params;
   const tokenAddress = event.srcAddress;
   const timestamp = event.block.timestamp;
@@ -57,9 +55,6 @@ module.exports = {
     await updateUserBalance(context, to, tokenAddress, value, "add", timestamp);
     await updateUser(context, to, timestamp);
   }
-      },
-    },
-  },
 };
 
 async function updateUserBalance(

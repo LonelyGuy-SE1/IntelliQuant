@@ -20,9 +20,9 @@ export async function analyzePortfolioWithCrestal(portfolio) {
   }
 
   try {
-    const conversationId = await createConversation();
+    const chatId = await createChat();
     const prompt = buildPortfolioPrompt(portfolio);
-    const response = await sendMessage(conversationId, prompt);
+    const response = await sendMessage(chatId, prompt);
     return parseAgentResponse(response, portfolio);
   } catch (error) {
     console.error("Crestal error:", error.message);
@@ -38,9 +38,9 @@ export async function generateCrestalRecommendations(
   portfolioData = null
 ) {
   try {
-    const conversationId = await createConversation();
+    const chatId = await createChat();
     const prompt = buildRecommendationsPrompt(tokens, portfolioData);
-    const response = await sendMessage(conversationId, prompt);
+    const response = await sendMessage(chatId, prompt);
     return parseRecommendations(response);
   } catch (error) {
     console.error("Crestal recommendations error:", error.message);
@@ -54,29 +54,31 @@ export async function generateCrestalRecommendations(
   }
 }
 
-async function createConversation() {
+async function createChat() {
   const response = await axios.post(
-    `${CRESTAL_BASE_URL}/conversation`,
+    `${CRESTAL_BASE_URL}/chats`,
     {},
     {
       headers: {
         Authorization: `Bearer ${CRESTAL_API_KEY}`,
         "Content-Type": "application/json",
       },
+      timeout: 10000, // 10 second timeout
     }
   );
-  return response.data.conversation_id;
+  return response.data.id;
 }
 
-async function sendMessage(conversationId, message) {
+async function sendMessage(chatId, message) {
   const response = await axios.post(
-    `${CRESTAL_BASE_URL}/conversation/${conversationId}/message`,
+    `${CRESTAL_BASE_URL}/chats/${chatId}/messages`,
     { message, stream: false },
     {
       headers: {
         Authorization: `Bearer ${CRESTAL_API_KEY}`,
         "Content-Type": "application/json",
       },
+      timeout: 15000, // 15 second timeout
     }
   );
   return response.data.response;
