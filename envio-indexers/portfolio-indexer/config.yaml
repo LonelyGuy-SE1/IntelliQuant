@@ -5,23 +5,27 @@ name: IntelliQuant-Portfolio
 description: Indexes token transfers to track user portfolio balances on Monad testnet
 
 # Contracts to index
-# Add all ERC-20 tokens you want to track
+# Using wildcard mode to catch ALL ERC-20 transfers
 contracts:
   - name: ERC20Token
     handler: src/EventHandlers.js
     events:
       - event: "Transfer(address indexed from, address indexed to, uint256 value)"
+        requiredEntities: []
+    abi_file_path: ./abis/ERC20.json
 
-# Network configuration
+# Network configuration  
 networks:
   - id: 10143 # Monad Testnet Chain ID
-    start_block: 0 # HyperSync will auto-detect deployment block
+    start_block: 0 # Start from genesis
     contracts:
-      # Real Monad testnet token addresses
+      # Wildcard mode - index ALL ERC20 transfers on Monad
       - name: ERC20Token
-        address:
+        address: 
           - "0x760AfE86e5de5fa0Ee542fc7B7B713e1c5425701" # WMON (Wrapped MON)
           - "0x836047a99e11f376522b447bffb6e3495dd0637c" # ETH (Bridged from Sepolia)
+          - "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2" # Test WETH
+        wildcard: true # Enable wildcard mode
 
 # Optional: Include transaction data in events
 field_selection:

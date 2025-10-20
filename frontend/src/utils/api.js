@@ -99,6 +99,23 @@ export async function getHealthiestTokens(tokenAddresses, limit = 10) {
   });
 }
 
+/**
+ * Generic POST request
+ */
+export async function post(endpoint, data) {
+  return await apiRequest(endpoint, {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}
+
+/**
+ * Generic GET request
+ */
+export async function get(endpoint) {
+  return await apiRequest(endpoint);
+}
+
 export default {
   getTokenScore,
   getMultipleTokenScores,
@@ -107,4 +124,6 @@ export default {
   getRebalancingTrades,
   getRecommendations,
   getHealthiestTokens,
+  post,
+  get,
 };
