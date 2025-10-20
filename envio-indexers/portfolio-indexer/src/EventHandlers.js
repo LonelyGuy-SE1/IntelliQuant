@@ -58,11 +58,11 @@ ERC20Token.Transfer.handler(async ({ event, context }) => {
 
 async function updateUserBalance(
   context,
-  userAddress: string,
-  tokenAddress: string,
-  amount: bigint,
-  operation: string,
-  timestamp: bigint
+  userAddress,
+  tokenAddress,
+  amount,
+  operation,
+  timestamp
 ) {
   const balanceId = `${userAddress}-${tokenAddress}`;
   let userBalance = await context.UserBalance.get(balanceId);
@@ -90,7 +90,7 @@ async function updateUserBalance(
   context.UserBalance.set(userBalance);
 }
 
-async function updateUser(context, userAddress: string, timestamp: bigint) {
+async function updateUser(context, userAddress, timestamp) {
   let user = await context.User.get(userAddress);
 
   if (!user) {
