@@ -4,16 +4,16 @@
 
 # Token health and risk metrics
 type TokenMetric @entity {
-  id: ID!  # Token address
+  id: ID! # Token address
   tokenAddress: String!
   symbol: String
-  
+
   # Health metrics (calculated in backend)
   liquidityScore: BigInt
   volumeScore: BigInt
   volatilityScore: BigInt
   overallScore: BigInt
-  
+
   # Timestamps
   lastUpdated: BigInt!
   createdAt: BigInt!

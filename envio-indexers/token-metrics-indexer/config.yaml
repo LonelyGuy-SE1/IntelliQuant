@@ -21,4 +21,4 @@ networks:
       # Metrics calculated in backend via GraphQL queries
       - name: DummyContract
         address:
-          - "0x0000000000000000000000000000000000000000"  # Null address - won't index anything
+          - "0x0000000000000000000000000000000000000000" # Null address - won't index anything

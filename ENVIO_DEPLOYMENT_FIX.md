@@ -172,7 +172,7 @@ Created an empty `EventHandlers.ts` file for the token-metrics-indexer to satisf
 ```typescript
 /**
  * Token Metrics Indexer Event Handlers
- * 
+ *
  * NOTE: This indexer is intentionally minimal.
  * For the hackathon, token metrics are calculated in the backend
  * by querying the DEX indexer's GraphQL endpoint.

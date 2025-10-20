@@ -1,12 +1,22 @@
 /**
  * IntelliQuant Main Application
- * Integrates MetaMask Smart Accounts, Envio data, and AI analytics
+ * Modern UI with navigation, custom modals, and toast notifications
  */
 
 import smartAccountService from './services/smart-account.js';
 import delegationService from './services/delegation.js';
 import transactionService from './services/transactions.js';
 import api from './utils/api.js';
+import {
+  showModal,
+  showToast,
+  showSuccess,
+  showError,
+  showInfo,
+  showLoading,
+  hideLoading,
+  navigateToSection
+} from './utils/ui-helpers.js';
 
 // Application State
 const state = {
@@ -15,56 +25,112 @@ const state = {
   isConnected: false,
 };
 
-// DOM Elements
-const elements = {
-  connectBtn: document.getElementById('connectBtn'),
-  connectWalletBtn: document.getElementById('connectWalletBtn'),
-  connectSection: document.getElementById('connectSection'),
-  accountSection: document.getElementById('accountSection'),
-  scoresSection: document.getElementById('scoresSection'),
-  portfolioSection: document.getElementById('portfolioSection'),
-  delegationsSection: document.getElementById('delegationsSection'),
-  recommendationsSection: document.getElementById('recommendationsSection'),
-  testTransactionSection: document.getElementById('testTransactionSection'),
-  loadingOverlay: document.getElementById('loadingOverlay'),
-  loadingMessage: document.getElementById('loadingMessage'),
-};
-
 // Initialize App
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('IntelliQuant initializing...');
+  console.log('🤖 IntelliQuant initializing...');
   setupEventListeners();
+  setupNavigation();
 });
 
-// Setup Event Listeners
-function setupEventListeners() {
-  // Connection
-  elements.connectBtn.addEventListener('click', handleConnect);
-  elements.connectWalletBtn.addEventListener('click', handleConnect);
+// ========== NAVIGATION ==========
+function setupNavigation() {
+  // Sidebar navigation
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', (e) => {
+      e.preventDefault();
+      const section = item.dataset.section;
+      navigateToSection(section);
+    });
+  });
 
-  // Smart Account
-  document.getElementById('createSmartAccountBtn').addEventListener('click', handleCreateSmartAccount);
-  document.getElementById('refreshBalanceBtn').addEventListener('click', handleRefreshBalance);
+  // Quick action buttons
+  document.querySelectorAll('.action-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const section = btn.dataset.section;
+      navigateToSection(section);
+    });
+  });
 
-  // Token Scores
-  document.getElementById('analyzeTokensBtn').addEventListener('click', handleAnalyzeTokens);
+  // Mobile menu toggle
+  const menuToggle = document.getElementById('menuToggle');
+  const sidebar = document.getElementById('sidebar');
 
-  // Portfolio
-  document.getElementById('loadPortfolioBtn').addEventListener('click', handleLoadPortfolio);
-  document.getElementById('analyzeRiskBtn').addEventListener('click', handleAnalyzeRisk);
+  menuToggle.addEventListener('click', () => {
+    sidebar.classList.toggle('active');
+  });
 
-  // Delegations
-  document.getElementById('createDelegationBtn').addEventListener('click', handleCreateDelegation);
-  document.getElementById('createMinimalDelegationBtn').addEventListener('click', handleCreateMinimalDelegation);
-
-  // Recommendations
-  document.getElementById('getRecommendationsBtn').addEventListener('click', handleGetRecommendations);
-
-  // Test Transaction
-  document.getElementById('sendTestTxBtn').addEventListener('click', handleSendTestTransaction);
+  // Close sidebar when clicking outside on mobile
+  document.addEventListener('click', (e) => {
+    if (window.innerWidth <= 1024) {
+      if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+        sidebar.classList.remove('active');
+      }
+    }
+  });
 }
 
-// Connect Wallet
+// ========== EVENT LISTENERS ==========
+function setupEventListeners() {
+  // Wallet Connection
+  const connectWalletTopBtn = document.getElementById('connectWalletTopBtn');
+  if (connectWalletTopBtn) {
+    connectWalletTopBtn.addEventListener('click', handleConnect);
+  }
+
+  // Disconnect button
+  const disconnectBtn = document.getElementById('disconnectBtn');
+  if (disconnectBtn) {
+    disconnectBtn.addEventListener('click', handleDisconnect);
+  }
+
+  // Smart Account
+  const createSmartAccountBtn = document.getElementById('createSmartAccountBtn');
+  if (createSmartAccountBtn) {
+    createSmartAccountBtn.addEventListener('click', handleCreateSmartAccount);
+  }
+
+  const refreshBalanceBtn = document.getElementById('refreshBalanceBtn');
+  if (refreshBalanceBtn) {
+    refreshBalanceBtn.addEventListener('click', handleRefreshBalance);
+  }
+
+  // Token Analysis
+  const analyzeTokensBtn = document.getElementById('analyzeTokensBtn');
+  if (analyzeTokensBtn) {
+    analyzeTokensBtn.addEventListener('click', handleAnalyzeTokens);
+  }
+
+  // Portfolio
+  const loadPortfolioBtn = document.getElementById('loadPortfolioBtn');
+  if (loadPortfolioBtn) {
+    loadPortfolioBtn.addEventListener('click', handleLoadPortfolio);
+  }
+
+  // Delegations
+  const createDelegationBtn = document.getElementById('createDelegationBtn');
+  if (createDelegationBtn) {
+    createDelegationBtn.addEventListener('click', handleCreateDelegation);
+  }
+
+  const createMinimalDelegationBtn = document.getElementById('createMinimalDelegationBtn');
+  if (createMinimalDelegationBtn) {
+    createMinimalDelegationBtn.addEventListener('click', handleCreateMinimalDelegation);
+  }
+
+  // Recommendations
+  const getRecommendationsBtn = document.getElementById('getRecommendationsBtn');
+  if (getRecommendationsBtn) {
+    getRecommendationsBtn.addEventListener('click', handleGetRecommendations);
+  }
+
+  // Transactions
+  const sendTestTxBtn = document.getElementById('sendTestTxBtn');
+  if (sendTestTxBtn) {
+    sendTestTxBtn.addEventListener('click', handleSendTestTransaction);
+  }
+}
+
+// ========== WALLET CONNECTION ==========
 async function handleConnect() {
   try {
     showLoading('Connecting to MetaMask...');
@@ -75,19 +141,73 @@ async function handleConnect() {
     state.isConnected = true;
 
     updateUI();
-
     hideLoading();
-    showSuccess('Connected successfully!');
+    showSuccess('Connected to MetaMask!');
   } catch (error) {
     hideLoading();
     showError('Failed to connect: ' + error.message);
+    console.error('Connection error:', error);
   }
 }
 
-// Create Smart Account
+async function handleDisconnect() {
+  const confirmed = await showModal(
+    'Disconnect Wallet',
+    'Are you sure you want to disconnect your wallet?',
+    { confirmText: 'Disconnect' }
+  );
+
+  if (confirmed) {
+    state.eoaAddress = null;
+    state.smartAccount = null;
+    state.isConnected = false;
+    updateUI();
+    showInfo('Wallet disconnected');
+  }
+}
+
+function updateUI() {
+  const connectWalletTopBtn = document.getElementById('connectWalletTopBtn');
+  const disconnectBtn = document.getElementById('disconnectBtn');
+  const walletInfo = document.getElementById('walletInfo');
+  const walletAddressDisplay = document.getElementById('walletAddressDisplay');
+  const eoaAddressDisplay = document.getElementById('eoaAddressDisplay');
+  const createSmartAccountBtn = document.getElementById('createSmartAccountBtn');
+  const refreshBalanceBtn = document.getElementById('refreshBalanceBtn');
+
+  if (state.isConnected && state.eoaAddress) {
+    // Hide connect button, show wallet info
+    connectWalletTopBtn.style.display = 'none';
+    walletInfo.style.display = 'flex';
+    disconnectBtn.style.display = 'inline-flex';
+
+    // Display addresses
+    const shortAddress = `${state.eoaAddress.slice(0, 6)}...${state.eoaAddress.slice(-4)}`;
+    walletAddressDisplay.textContent = shortAddress;
+    eoaAddressDisplay.textContent = state.eoaAddress;
+
+    // Enable smart account creation
+    createSmartAccountBtn.disabled = false;
+    refreshBalanceBtn.disabled = false;
+  } else {
+    // Show connect button, hide wallet info
+    connectWalletTopBtn.style.display = 'inline-flex';
+    walletInfo.style.display = 'none';
+    disconnectBtn.style.display = 'none';
+
+    // Reset displays
+    eoaAddressDisplay.textContent = 'Not connected';
+
+    // Disable buttons
+    createSmartAccountBtn.disabled = true;
+    refreshBalanceBtn.disabled = true;
+  }
+}
+
+// ========== SMART ACCOUNT ==========
 async function handleCreateSmartAccount() {
   if (!state.isConnected) {
-    showError('Please connect wallet first');
+    showError('Please connect your wallet first');
     return;
   }
 
@@ -95,45 +215,42 @@ async function handleCreateSmartAccount() {
     showLoading('Creating Smart Account...');
 
     const smartAccount = await smartAccountService.createSmartAccount(state.eoaAddress);
-
     state.smartAccount = smartAccount;
 
-    document.getElementById('smartAccountAddress').textContent = smartAccount.address;
+    const smartAccountDisplay = document.getElementById('smartAccountDisplay');
+    const balanceDisplay = document.getElementById('balanceDisplay');
 
-    // Check deployment
-    const isDeployed = await smartAccountService.isSmartAccountDeployed(smartAccount.address);
-    document.getElementById('deploymentStatus').textContent = isDeployed ? 'Deployed' : 'Counterfactual';
-    document.getElementById('deploymentStatus').className = isDeployed ? 'value text-success' : 'value text-warning';
+    smartAccountDisplay.textContent = smartAccount.address;
 
     // Get balance
     const balance = await smartAccountService.getSmartAccountBalance(smartAccount.address);
-    document.getElementById('accountBalance').textContent = `${balance} MON`;
+    balanceDisplay.textContent = `${balance} MON`;
 
     hideLoading();
-    showSuccess('Smart Account created!');
+    showSuccess('Smart Account created successfully!');
   } catch (error) {
     hideLoading();
     showError('Failed to create smart account: ' + error.message);
+    console.error('Smart account error:', error);
   }
 }
 
-// Refresh Balance
 async function handleRefreshBalance() {
   if (!state.smartAccount) {
-    showError('Create smart account first');
+    showError('Create a smart account first');
     return;
   }
 
   try {
     const balance = await smartAccountService.getSmartAccountBalance(state.smartAccount.address);
-    document.getElementById('accountBalance').textContent = `${balance} MON`;
+    document.getElementById('balanceDisplay').textContent = `${balance} MON`;
     showSuccess('Balance refreshed');
   } catch (error) {
     showError('Failed to refresh balance: ' + error.message);
   }
 }
 
-// Analyze Tokens
+// ========== TOKEN ANALYSIS ==========
 async function handleAnalyzeTokens() {
   const input = document.getElementById('tokenAddressesInput').value.trim();
 
@@ -145,180 +262,135 @@ async function handleAnalyzeTokens() {
   const tokens = input.split(',').map(t => t.trim()).filter(t => t);
 
   if (tokens.length === 0) {
-    showError('No valid token addresses provided');
+    showError('No valid token addresses');
     return;
   }
 
   try {
     showLoading('Analyzing tokens...');
 
-    const response = await api.getMultipleTokenScores(tokens);
+    const response = await api.post('/tokens/scores', { tokens });
+    const scores = response.data;
 
-    displayTokenScores(response.data);
-
+    displayTokenScores(scores);
     hideLoading();
+    showSuccess(`Analyzed ${tokens.length} token(s)`);
   } catch (error) {
     hideLoading();
     showError('Failed to analyze tokens: ' + error.message);
+    console.error('Token analysis error:', error);
   }
 }
 
-// Display Token Scores
 function displayTokenScores(scores) {
-  const resultsDiv = document.getElementById('tokenScoresResults');
-  resultsDiv.innerHTML = '';
+  const container = document.getElementById('tokenScoresResults');
 
   if (!scores || scores.length === 0) {
-    resultsDiv.innerHTML = '<p>No results found</p>';
+    container.innerHTML = '<p style="text-align: center; color: var(--text-muted);">No scores available</p>';
     return;
   }
 
-  for (const scoreData of scores) {
-    const card = document.createElement('div');
-    card.className = 'result-card';
-
-    const scoreClass = scoreData.score >= 70 ? 'score-high' : scoreData.score >= 40 ? 'score-medium' : 'score-low';
-
-    card.innerHTML = `
-      <div class="result-header">
-        <span class="result-title">${scoreData.address.substring(0, 10)}...</span>
-        <span class="score-badge ${scoreClass}">${scoreData.score}/100</span>
+  container.innerHTML = scores.map(score => `
+    <div class="card" style="margin-bottom: 1rem;">
+      <div class="card-header">
+        <h3 style="font-family: var(--font-mono); font-size: 0.9rem;">${score.token || 'Token'}</h3>
+        <span class="badge ${getScoreBadgeClass(score.score)}">${score.score}/100</span>
       </div>
-      <div class="result-details">${scoreData.explanation || 'No explanation available'}</div>
-      ${scoreData.components ? `
-        <div class="component-scores">
-          <div class="component-score">
-            <div class="label">Liquidity</div>
-            <div class="value">${scoreData.components.liquidity}</div>
+      <div class="card-body">
+        <p>${score.explanation || 'Token health score'}</p>
+        ${score.components ? `
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-top: 1rem;">
+            <div class="info-group">
+              <label>Liquidity</label>
+              <div class="balance-display">${score.components.liquidity || 0}</div>
+            </div>
+            <div class="info-group">
+              <label>Stability</label>
+              <div class="balance-display">${score.components.stability || 0}</div>
+            </div>
+            <div class="info-group">
+              <label>Demand</label>
+              <div class="balance-display">${score.components.demand || 0}</div>
+            </div>
+            <div class="info-group">
+              <label>Slippage</label>
+              <div class="balance-display">${score.components.slippage || 0}</div>
+            </div>
           </div>
-          <div class="component-score">
-            <div class="label">Stability</div>
-            <div class="value">${scoreData.components.stability}</div>
-          </div>
-          <div class="component-score">
-            <div class="label">Demand</div>
-            <div class="value">${scoreData.components.demand}</div>
-          </div>
-          <div class="component-score">
-            <div class="label">Slippage</div>
-            <div class="value">${scoreData.components.slippage}</div>
-          </div>
-        </div>
-      ` : ''}
-    `;
-
-    resultsDiv.appendChild(card);
-  }
+        ` : ''}
+      </div>
+    </div>
+  `).join('');
 }
 
-// Load Portfolio
+function getScoreBadgeClass(score) {
+  if (score >= 70) return 'badge-green';
+  return 'badge';
+}
+
+// ========== PORTFOLIO ==========
 async function handleLoadPortfolio() {
   if (!state.smartAccount) {
-    showError('Create smart account first');
+    showError('Create a smart account first');
     return;
   }
 
   try {
     showLoading('Loading portfolio...');
 
-    const response = await api.getUserPortfolio(state.smartAccount.address);
+    const response = await api.get(`/portfolio/${state.smartAccount.address}`);
+    const portfolio = response.data;
 
-    displayPortfolio(response.data);
-
+    displayPortfolio(portfolio);
     hideLoading();
+    showSuccess('Portfolio loaded');
   } catch (error) {
     hideLoading();
     showError('Failed to load portfolio: ' + error.message);
+    console.error('Portfolio error:', error);
   }
 }
 
-// Display Portfolio
 function displayPortfolio(portfolio) {
-  const resultsDiv = document.getElementById('portfolioResults');
-  resultsDiv.innerHTML = '';
+  const container = document.getElementById('portfolioResults');
 
   if (!portfolio || !portfolio.balances || portfolio.balances.length === 0) {
-    resultsDiv.innerHTML = '<p>No tokens found in portfolio. Add some tokens to get started!</p>';
+    container.innerHTML = '<p style="text-align: center; color: var(--text-muted);">No holdings found</p>';
     return;
   }
 
-  const html = `
-    <h3>Holdings</h3>
-    <p>Total Tokens: ${portfolio.totalTokens}</p>
-    <div style="margin-top: 1rem;">
-      ${portfolio.balances.map(balance => `
-        <div class="result-card">
-          <div class="result-header">
-            <span class="result-title">Token: ${balance.tokenAddress.substring(0, 10)}...</span>
-            <span class="value">${(Number(balance.balance) / 1e18).toFixed(4)}</span>
+  container.innerHTML = `
+    <div class="card">
+      <div class="card-header">
+        <h3>Holdings</h3>
+      </div>
+      <div class="card-body">
+        ${portfolio.balances.map(balance => `
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: var(--bg-secondary); border-radius: 0.5rem; margin-bottom: 0.75rem;">
+            <div>
+              <div style="font-family: var(--font-mono); color: var(--text-primary);">${balance.token || balance.tokenAddress}</div>
+              <div style="font-size: 0.875rem; color: var(--text-secondary);">${balance.tokenAddress}</div>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-size: 1.125rem; font-weight: 600; color: var(--accent-green);">${balance.balance}</div>
+            </div>
           </div>
-          <div class="result-details">Transfers: ${balance.transferCount}</div>
-        </div>
-      `).join('')}
-    </div>
-  `;
-
-  resultsDiv.innerHTML = html;
-}
-
-// Analyze Risk
-async function handleAnalyzeRisk() {
-  if (!state.smartAccount) {
-    showError('Create smart account first');
-    return;
-  }
-
-  try {
-    showLoading('Analyzing portfolio risk...');
-
-    const response = await api.analyzePortfolio(state.smartAccount.address, {});
-
-    displayRiskAnalysis(response.data);
-
-    hideLoading();
-  } catch (error) {
-    hideLoading();
-    showError('Failed to analyze risk: ' + error.message);
-  }
-}
-
-// Display Risk Analysis
-function displayRiskAnalysis(analysis) {
-  const resultsDiv = document.getElementById('portfolioResults');
-
-  const html = `
-    <h3>Risk Analysis</h3>
-    <div class="status-grid">
-      <div class="status-item">
-        <span class="label">Drift</span>
-        <span class="value">${(analysis.drift * 100).toFixed(1)}%</span>
-      </div>
-      <div class="status-item">
-        <span class="label">Flags</span>
-        <span class="value">${analysis.flags.join(', ') || 'None'}</span>
+        `).join('')}
       </div>
     </div>
-    <div style="margin-top: 1rem;">
-      <h4>Suggestions:</h4>
-      <ul class="features-list">
-        ${analysis.suggestions.map(s => `<li>${s}</li>`).join('')}
-      </ul>
-    </div>
   `;
-
-  resultsDiv.innerHTML = html;
 }
 
-// Create Delegation
+// ========== DELEGATIONS ==========
 async function handleCreateDelegation() {
   if (!state.smartAccount) {
-    showError('Create smart account first');
+    showError('Create a smart account first');
     return;
   }
 
   const delegateAddress = document.getElementById('delegateAddress').value.trim();
   const maxTransfer = document.getElementById('maxTransfer').value;
-  const maxCalls = parseInt(document.getElementById('maxCalls').value);
+  const maxCalls = document.getElementById('maxCalls').value;
 
   if (!delegateAddress) {
     showError('Please enter delegate address');
@@ -333,36 +405,42 @@ async function handleCreateDelegation() {
       delegateAddress,
       {
         maxNativeTransfer: maxTransfer,
-        maxCalls: maxCalls,
+        maxCalls: parseInt(maxCalls)
       }
     );
 
-    displayDelegation(result);
-
+    displayDelegationResult(result);
     hideLoading();
-    showSuccess('Delegation created successfully!');
+    showSuccess('Delegation created!');
   } catch (error) {
     hideLoading();
     showError('Failed to create delegation: ' + error.message);
+    console.error('Delegation error:', error);
   }
 }
 
-// Create Minimal Delegation
 async function handleCreateMinimalDelegation() {
   if (!state.smartAccount) {
-    showError('Create smart account first');
+    showError('Create a smart account first');
     return;
   }
 
-  const delegateAddress = document.getElementById('delegateAddress').value.trim() || state.eoaAddress;
+  const delegateAddress = document.getElementById('delegateAddress').value.trim();
+
+  if (!delegateAddress) {
+    showError('Please enter delegate address');
+    return;
+  }
 
   try {
-    showLoading('Creating test delegation...');
+    showLoading('Creating minimal delegation...');
 
-    const result = await delegationService.createMinimalDelegation(state.smartAccount, delegateAddress);
+    const result = await delegationService.createMinimalDelegation(
+      state.smartAccount,
+      delegateAddress
+    );
 
-    displayDelegation(result);
-
+    displayDelegationResult(result);
     hideLoading();
     showSuccess('Test delegation created!');
   } catch (error) {
@@ -371,36 +449,40 @@ async function handleCreateMinimalDelegation() {
   }
 }
 
-// Display Delegation
-function displayDelegation(delegationData) {
-  const resultsDiv = document.getElementById('delegationResults');
+function displayDelegationResult(result) {
+  const container = document.getElementById('delegationResults');
 
-  const html = `
-    <h3>Delegation Created</h3>
-    <div class="status-grid">
-      <div class="status-item">
-        <span class="label">Delegate</span>
-        <span class="value">${delegationData.delegation.to}</span>
+  container.innerHTML = `
+    <div class="card" style="margin-top: 1.5rem;">
+      <div class="card-header">
+        <h3>Delegation Created</h3>
+        <span class="badge badge-green">Active</span>
       </div>
-      <div class="status-item">
-        <span class="label">Max Transfer</span>
-        <span class="value">${delegationData.caveats.maxNativeTransfer} MON</span>
+      <div class="card-body">
+        <div class="info-group">
+          <label>Delegate</label>
+          <div class="address-display">${result.delegation.delegate}</div>
+        </div>
+        <div class="info-group">
+          <label>Authority</label>
+          <div class="address-display">${result.delegation.authority}</div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-top: 1rem;">
+          <div class="info-group">
+            <label>Max Transfer</label>
+            <div class="balance-display">${result.caveats.maxNativeTransfer} MON</div>
+          </div>
+          <div class="info-group">
+            <label>Max Calls</label>
+            <div class="balance-display">${result.caveats.maxCalls}</div>
+          </div>
+        </div>
       </div>
-      <div class="status-item">
-        <span class="label">Max Calls</span>
-        <span class="value">${delegationData.caveats.maxCalls}</span>
-      </div>
-    </div>
-    <div style="margin-top: 1rem; padding: 1rem; background: var(--dark-bg); border-radius: 0.5rem; overflow-wrap: break-word;">
-      <p style="color: var(--text-secondary); font-size: 0.85rem;">Signed Delegation (store securely):</p>
-      <code style="color: var(--primary-color); font-size: 0.75rem;">${JSON.stringify(delegationData.signedDelegation).substring(0, 200)}...</code>
     </div>
   `;
-
-  resultsDiv.innerHTML = html;
 }
 
-// Get Recommendations
+// ========== AI RECOMMENDATIONS ==========
 async function handleGetRecommendations() {
   const input = document.getElementById('recommendTokensInput').value.trim();
 
@@ -412,59 +494,51 @@ async function handleGetRecommendations() {
   const tokens = input.split(',').map(t => t.trim()).filter(t => t);
 
   try {
-    showLoading('Generating recommendations...');
+    showLoading('Generating AI recommendations...');
 
-    const response = await api.getRecommendations(tokens, 5);
+    const response = await api.post('/recommendations', { tokens, limit: 5 });
+    const recommendations = response.data;
 
-    displayRecommendations(response.data);
-
+    displayRecommendations(recommendations);
     hideLoading();
+    showSuccess('Recommendations generated');
   } catch (error) {
     hideLoading();
-    showError('Failed to get recommendations: ' + error.message);
+    showError('Failed to generate recommendations: ' + error.message);
   }
 }
 
-// Display Recommendations
 function displayRecommendations(recommendations) {
-  const resultsDiv = document.getElementById('recommendationsResults');
-  resultsDiv.innerHTML = '';
+  const container = document.getElementById('recommendationsResults');
 
   if (!recommendations || recommendations.length === 0) {
-    resultsDiv.innerHTML = '<p>No recommendations available</p>';
+    container.innerHTML = '<p style="text-align: center; color: var(--text-muted);">No recommendations available</p>';
     return;
   }
 
-  for (const rec of recommendations) {
-    const card = document.createElement('div');
-    card.className = 'result-card';
-
-    const actionClass = rec.action === 'BUY' ? 'text-success' : 'text-danger';
-
-    card.innerHTML = `
-      <div class="result-header">
-        <span class="result-title">${rec.token.substring(0, 10)}...</span>
-        <span class="value ${actionClass}">${rec.action} (${rec.confidence}%)</span>
+  container.innerHTML = recommendations.map((rec, index) => `
+    <div class="card" style="margin-bottom: 1rem;">
+      <div class="card-header">
+        <h3>Recommendation #${index + 1}</h3>
+        <span class="badge badge-green">${rec.action || 'BUY'}</span>
       </div>
-      <div class="result-details">
-        Health Score: ${rec.healthScore}/100
+      <div class="card-body">
+        <p>${rec.reason || 'AI-powered recommendation'}</p>
+        ${rec.token ? `
+          <div class="info-group">
+            <label>Token</label>
+            <div class="address-display">${rec.token}</div>
+          </div>
+        ` : ''}
       </div>
-      <div style="margin-top: 0.5rem;">
-        <strong>Reasons:</strong>
-        <ul class="features-list">
-          ${rec.reasons.map(r => `<li>${r}</li>`).join('')}
-        </ul>
-      </div>
-    `;
-
-    resultsDiv.appendChild(card);
-  }
+    </div>
+  `).join('');
 }
 
-// Send Test Transaction
+// ========== TRANSACTIONS ==========
 async function handleSendTestTransaction() {
   if (!state.smartAccount) {
-    showError('Create smart account first');
+    showError('Create a smart account first');
     return;
   }
 
@@ -476,70 +550,51 @@ async function handleSendTestTransaction() {
     return;
   }
 
+  const confirmed = await showModal(
+    'Send Transaction',
+    `Send ${amount} MON to ${recipient}?`,
+    { confirmText: 'Send' }
+  );
+
+  if (!confirmed) return;
+
   try {
-    showLoading('Sending gasless transaction...');
+    showLoading('Sending transaction...');
 
-    const result = await transactionService.sendNativeTransfer(state.smartAccount, recipient, amount);
+    const result = await transactionService.sendGaslessTransaction(
+      state.smartAccount,
+      recipient,
+      amount
+    );
 
-    displayTransactionResult(result);
+    const container = document.getElementById('transactionResults');
+    container.innerHTML = `
+      <div class="card" style="margin-top: 1.5rem;">
+        <div class="card-header">
+          <h3>Transaction Sent</h3>
+          <span class="badge badge-green">Success</span>
+        </div>
+        <div class="card-body">
+          <div class="info-group">
+            <label>Transaction Hash</label>
+            <div class="address-display">${result.hash || 'Pending...'}</div>
+          </div>
+        </div>
+      </div>
+    `;
 
     hideLoading();
-    showSuccess('Transaction sent successfully!');
+    showSuccess('Transaction sent!');
   } catch (error) {
     hideLoading();
-    showError('Transaction failed: ' + error.message);
+    showError('Failed to send transaction: ' + error.message);
   }
 }
 
-// Display Transaction Result
-function displayTransactionResult(result) {
-  const resultsDiv = document.getElementById('transactionResults');
-
-  const html = `
-    <h3>Transaction Successful</h3>
-    <div class="status-item">
-      <span class="label">Hash</span>
-      <span class="value">${result.hash}</span>
-    </div>
-    <p style="color: var(--text-success); margin-top: 1rem;">Transaction was sponsored (gasless)!</p>
-  `;
-
-  resultsDiv.innerHTML = html;
-}
-
-// Update UI
-function updateUI() {
-  if (state.isConnected) {
-    elements.connectSection.classList.add('hidden');
-    elements.accountSection.classList.remove('hidden');
-    elements.scoresSection.classList.remove('hidden');
-    elements.portfolioSection.classList.remove('hidden');
-    elements.delegationsSection.classList.remove('hidden');
-    elements.recommendationsSection.classList.remove('hidden');
-    elements.testTransactionSection.classList.remove('hidden');
-
-    elements.connectBtn.textContent = `${state.eoaAddress.substring(0, 6)}...${state.eoaAddress.substring(38)}`;
-
-    document.getElementById('eoaAddress').textContent = state.eoaAddress;
-  }
-}
-
-// UI Utilities
-function showLoading(message = 'Loading...') {
-  elements.loadingMessage.textContent = message;
-  elements.loadingOverlay.classList.remove('hidden');
-}
-
-function hideLoading() {
-  elements.loadingOverlay.classList.add('hidden');
-}
-
-function showSuccess(message) {
-  console.log('✓ Success:', message);
-  // Could add a toast notification here
-}
-
-function showError(message) {
-  console.error('✗ Error:', message);
-  alert(message); // Simple alert for now
-}
+// Make functions available globally for debugging
+window.IntelliQuant = {
+  state,
+  handleConnect,
+  handleDisconnect,
+  navigateToSection
+};
