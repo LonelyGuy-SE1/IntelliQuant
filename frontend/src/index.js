@@ -342,6 +342,16 @@ async function handleLoadPortfolio() {
     const portfolio = response.data;
 
     displayPortfolio(portfolio);
+    
+    // Auto-load AI analysis
+    try {
+      showLoading('Analyzing with AI...');
+      const analysisResponse = await api.post(`/portfolio/${state.smartAccount.address}/analyze`);
+      displayAIAnalysis(analysisResponse.data);
+    } catch (aiError) {
+      console.error('AI analysis error:', aiError);
+    }
+    
     hideLoading();
     showSuccess('Portfolio loaded');
   } catch (error) {
@@ -376,6 +386,64 @@ function displayPortfolio(portfolio) {
             </div>
           </div>
         `).join('')}
+      </div>
+    </div>
+    <div id="aiAnalysisContainer"></div>
+  `;
+}
+
+function displayAIAnalysis(analysis) {
+  const container = document.getElementById('aiAnalysisContainer');
+  
+  if (!container) return;
+
+  const riskColor = analysis.riskLevel === 'high' ? 'var(--accent-red)' :
+                    analysis.riskLevel === 'medium' ? 'var(--accent-yellow)' : 
+                    'var(--accent-green)';
+
+  container.innerHTML = `
+    <div class="card" style="margin-top: 1rem; border-left: 3px solid var(--accent-purple);">
+      <div class="card-header">
+        <h3>🤖 AI Analysis ${analysis.aiPowered ? '(Crestal Agent)' : '(Rule-based)'}</h3>
+        <span class="badge" style="background: ${riskColor};">${analysis.riskLevel.toUpperCase()} RISK</span>
+      </div>
+      <div class="card-body">
+        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">${analysis.summary}</p>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+          <div class="info-group">
+            <label>Diversification</label>
+            <div class="balance-display">${analysis.diversification.toFixed(1)}%</div>
+          </div>
+          <div class="info-group">
+            <label>Total Tokens</label>
+            <div class="balance-display">${analysis.metrics.totalTokens}</div>
+          </div>
+          ${analysis.metrics.topHolding ? `
+            <div class="info-group">
+              <label>Top Holding</label>
+              <div class="balance-display">${analysis.metrics.topHolding.percentage.toFixed(1)}%</div>
+            </div>
+          ` : ''}
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+          <h4 style="color: var(--text-primary); margin-bottom: 0.75rem;">💡 Insights</h4>
+          ${analysis.insights.map(insight => `
+            <div style="padding: 0.75rem; background: var(--bg-secondary); border-radius: 0.5rem; margin-bottom: 0.5rem;">
+              ${insight}
+            </div>
+          `).join('')}
+        </div>
+
+        <div>
+          <h4 style="color: var(--text-primary); margin-bottom: 0.75rem;">📊 Recommendations</h4>
+          ${analysis.recommendations.map(rec => `
+            <div style="padding: 0.75rem; background: var(--bg-secondary); border-radius: 0.5rem; margin-bottom: 0.5rem; border-left: 2px solid var(--accent-green);">
+              ${rec}
+            </div>
+          `).join('')}
+        </div>
       </div>
     </div>
   `;

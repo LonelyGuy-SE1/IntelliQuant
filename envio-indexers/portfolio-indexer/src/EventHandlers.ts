@@ -1,15 +1,15 @@
 /**
  * Portfolio Indexer Event Handlers
  * Processes ERC-20 Transfer events to maintain user token balances
- *
- * Note: ERC20Token is injected by Envio's generated code (no import needed)
  */
+
+import { ERC20Token } from "generated";
 
 /**
  * Handler for ERC-20 Transfer events
  * Updates balances for both sender and recipient
  */
-ERC20Token.Transfer.handler(async ({ event, context }: any) => {
+ERC20Token.Transfer.handler(async ({ event, context }) => {
   const { from, to, value } = event.params;
   const tokenAddress = event.srcAddress;
   const timestamp = event.block.timestamp;
@@ -63,7 +63,7 @@ ERC20Token.Transfer.handler(async ({ event, context }: any) => {
 });
 
 async function updateUserBalance(
-  context: any,
+  context,
   userAddress: string,
   tokenAddress: string,
   amount: bigint,
@@ -96,7 +96,7 @@ async function updateUserBalance(
   context.UserBalance.set(userBalance);
 }
 
-async function updateUser(context: any, userAddress: string, timestamp: bigint) {
+async function updateUser(context, userAddress: string, timestamp: bigint) {
   let user = await context.User.get(userAddress);
 
   if (!user) {

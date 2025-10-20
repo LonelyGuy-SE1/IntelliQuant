@@ -37,6 +37,33 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Test AI endpoint
+app.get('/api/ai/test', async (req, res) => {
+  try {
+    const { analyzePortfolioWithCrestal } = await import('../services/ai-crestal.js');
+    const testPortfolio = {
+      userAddress: '0xTest',
+      balances: [
+        { tokenAddress: '0x760AfE86e5de5fa0Ee542fc7B7B713e1c5425701', token: 'WMON', balance: '1000000' },
+        { tokenAddress: '0x836047a99e11f376522b447bffb6e3495dd0637c', token: 'ETH', balance: '500000' }
+      ]
+    };
+    
+    const analysis = await analyzePortfolioWithCrestal(testPortfolio);
+    res.json({
+      success: true,
+      message: 'Crestal AI Agent is working!',
+      analysis
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      message: 'Crestal API key may be invalid or network issue'
+    });
+  }
+});
+
 // API Routes
 app.use('/api/tokens', tokensRouter);
 app.use('/api/portfolio', portfolioRouter);
