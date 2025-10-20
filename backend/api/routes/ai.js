@@ -8,11 +8,11 @@ const router = express.Router();
 router.post("/test", async (req, res) => {
   try {
     const { prompt } = req.body;
-    
+
     if (!prompt) {
       return res.status(400).json({
         success: false,
-        error: "Prompt is required"
+        error: "Prompt is required",
       });
     }
 
@@ -26,14 +26,14 @@ router.post("/test", async (req, res) => {
       success: true,
       chatId: chatId,
       analysis: response,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   } catch (error) {
     console.error("Crestal test error:", error);
     res.status(500).json({
       success: false,
       error: error.message,
-      fallback: "Using local analysis - Crestal API unavailable"
+      fallback: "Using local analysis - Crestal API unavailable",
     });
   }
 });

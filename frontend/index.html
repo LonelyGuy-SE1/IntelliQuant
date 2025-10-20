@@ -4,11 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>IntelliQuant - AI Portfolio Management</title>
-    <link rel="icon" href="/assets/logo.jpg">
+    <link rel="icon" href="/assets/logo.jpg" />
     <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="/src/styles/main.css" />
   </head>
   <body>
@@ -16,7 +19,11 @@
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-header">
         <div class="logo-container">
-          <img src="/assets/logo.jpg" alt="IntelliQuant Logo" class="logo-img" />
+          <img
+            src="/assets/logo.jpg"
+            alt="IntelliQuant Logo"
+            class="logo-img"
+          />
           <div class="logo-text">
             <h1>IntelliQuant</h1>
             <p>AI Portfolio Manager</p>
@@ -70,9 +77,13 @@
         </button>
 
         <div class="topbar-actions">
-          <div class="wallet-info" id="walletInfo" style="display: none;">
+          <div class="wallet-info" id="walletInfo" style="display: none">
             <div class="wallet-address" id="walletAddressDisplay"></div>
-            <button class="btn btn-outline btn-sm" id="disconnectBtn" style="display: none;">
+            <button
+              class="btn btn-outline btn-sm"
+              id="disconnectBtn"
+              style="display: none"
+            >
               Disconnect
             </button>
           </div>
@@ -84,7 +95,6 @@
 
       <!-- Content Sections -->
       <div class="content-wrapper">
-
         <!-- Dashboard Section -->
         <section class="content-section active" id="section-dashboard">
           <div class="section-header">
@@ -133,21 +143,33 @@
               <div class="card-body">
                 <div class="info-group">
                   <label>EOA Address</label>
-                  <div class="address-display" id="eoaAddressDisplay">Not connected</div>
+                  <div class="address-display" id="eoaAddressDisplay">
+                    Not connected
+                  </div>
                 </div>
                 <div class="info-group">
                   <label>Smart Account</label>
-                  <div class="address-display" id="smartAccountDisplay">Not created</div>
+                  <div class="address-display" id="smartAccountDisplay">
+                    Not created
+                  </div>
                 </div>
                 <div class="info-group">
                   <label>Balance</label>
                   <div class="balance-display" id="balanceDisplay">0 MON</div>
                 </div>
                 <div class="card-actions">
-                  <button class="btn btn-primary" id="createSmartAccountBtn" disabled>
+                  <button
+                    class="btn btn-primary"
+                    id="createSmartAccountBtn"
+                    disabled
+                  >
                     Create Smart Account
                   </button>
-                  <button class="btn btn-outline" id="refreshBalanceBtn" disabled>
+                  <button
+                    class="btn btn-outline"
+                    id="refreshBalanceBtn"
+                    disabled
+                  >
                     Refresh
                   </button>
                 </div>
@@ -193,7 +215,9 @@
           <div class="card">
             <div class="card-header">
               <h3>Holdings</h3>
-              <button class="btn btn-primary btn-sm" id="loadPortfolioBtn">Load Portfolio</button>
+              <button class="btn btn-primary btn-sm" id="loadPortfolioBtn">
+                Load Portfolio
+              </button>
             </div>
             <div class="card-body">
               <div id="portfolioResults" class="results-container"></div>
@@ -222,7 +246,9 @@
                   placeholder="0x760AfE86e5de5fa0Ee542fc7B7B713e1c5425701, 0x836047a99e11f376522b447bffb6e3495dd0637c"
                 ></textarea>
               </div>
-              <button class="btn btn-primary" id="analyzeTokensBtn">Analyze Tokens</button>
+              <button class="btn btn-primary" id="analyzeTokensBtn">
+                Analyze Tokens
+              </button>
               <div id="tokenScoresResults" class="results-container"></div>
             </div>
           </div>
@@ -262,17 +288,16 @@
                 </div>
                 <div class="form-group">
                   <label>Max Calls</label>
-                  <input
-                    type="number"
-                    class="input"
-                    id="maxCalls"
-                    value="20"
-                  />
+                  <input type="number" class="input" id="maxCalls" value="20" />
                 </div>
               </div>
               <div class="card-actions">
-                <button class="btn btn-primary" id="createDelegationBtn">Create Delegation</button>
-                <button class="btn btn-outline" id="createMinimalDelegationBtn">Create Test Delegation</button>
+                <button class="btn btn-primary" id="createDelegationBtn">
+                  Create Delegation
+                </button>
+                <button class="btn btn-outline" id="createMinimalDelegationBtn">
+                  Create Test Delegation
+                </button>
               </div>
               <div id="delegationResults" class="results-container"></div>
             </div>
@@ -300,7 +325,9 @@
                   placeholder="Enter token addresses (comma-separated)"
                 ></textarea>
               </div>
-              <button class="btn btn-primary" id="getRecommendationsBtn">Generate Recommendations</button>
+              <button class="btn btn-primary" id="getRecommendationsBtn">
+                Generate Recommendations
+              </button>
               <div id="recommendationsResults" class="results-container"></div>
             </div>
           </div>
@@ -337,12 +364,13 @@
                   step="0.001"
                 />
               </div>
-              <button class="btn btn-primary" id="sendTestTxBtn">Send Gasless Transaction</button>
+              <button class="btn btn-primary" id="sendTestTxBtn">
+                Send Gasless Transaction
+              </button>
               <div id="transactionResults" class="results-container"></div>
             </div>
           </div>
         </section>
-
       </div>
     </main>
 
@@ -353,9 +381,7 @@
           <h3 id="modalTitle">Modal Title</h3>
           <button class="modal-close" id="modalClose">&times;</button>
         </div>
-        <div class="modal-body" id="modalBody">
-          Modal content
-        </div>
+        <div class="modal-body" id="modalBody">Modal content</div>
         <div class="modal-footer" id="modalFooter">
           <button class="btn btn-outline" id="modalCancelBtn">Cancel</button>
           <button class="btn btn-primary" id="modalConfirmBtn">Confirm</button>

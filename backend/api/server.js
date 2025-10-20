@@ -76,11 +76,11 @@ app.post("/api/ai/test", async (req, res) => {
   try {
     const aiCrestal = await import("../services/ai-crestal.js");
     const { prompt } = req.body;
-    
+
     if (!prompt) {
       return res.status(400).json({
         success: false,
-        error: "Prompt is required"
+        error: "Prompt is required",
       });
     }
 
@@ -92,14 +92,14 @@ app.post("/api/ai/test", async (req, res) => {
       success: true,
       chatId: chatId,
       analysis: response,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   } catch (error) {
     console.error("Crestal chat error:", error);
     res.status(500).json({
       success: false,
       error: error.message,
-      fallback: "Crestal API unavailable - check API key and network"
+      fallback: "Crestal API unavailable - check API key and network",
     });
   }
 });
