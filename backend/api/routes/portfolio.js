@@ -5,6 +5,7 @@
 import express from 'express';
 import envioClient from '../../services/envio-client.js';
 import riskAnalysis from '../../services/risk-analysis.js';
+import aiAnalysis from '../../services/ai-analysis.js';
 
 const router = express.Router();
 
@@ -32,6 +33,23 @@ router.get('/:address', async (req, res) => {
     res.json({ success: true, data: portfolio });
   } catch (error) {
     console.error('Error fetching portfolio:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+/**
+ * GET /api/portfolio/:address/ai-insights
+ * Get AI-powered portfolio analysis and recommendations
+ */
+router.get('/:address/ai-insights', async (req, res) => {
+  try {
+    const { address } = req.params;
+
+    const insights = await aiAnalysis.analyzePortfolioWithAI(address);
+
+    res.json({ success: true, data: insights });
+  } catch (error) {
+    console.error('Error generating AI insights:', error);
     res.status(500).json({ success: false, error: error.message });
   }
 });
