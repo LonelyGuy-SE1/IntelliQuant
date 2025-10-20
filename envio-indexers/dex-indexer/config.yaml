@@ -11,13 +11,9 @@ contracts:
     handler: src/EventHandlers.ts
     events:
       - event: "Swap(address indexed sender, uint amount0In, uint amount1In, uint amount0Out, uint amount1Out, address indexed to)"
-        requiredEntities: []
       - event: "Mint(address indexed sender, uint amount0, uint amount1)"
-        requiredEntities: []
       - event: "Burn(address indexed sender, uint amount0, uint amount1, address indexed to)"
-        requiredEntities: []
       - event: "Sync(uint112 reserve0, uint112 reserve1)"
-        requiredEntities: []
 
   # Optional: Uniswap V3 style pools
   - name: UniswapV3Pool
@@ -25,24 +21,16 @@ contracts:
     handler: src/EventHandlers.ts
     events:
       - event: "Swap(address indexed sender, address indexed recipient, int256 amount0, int256 amount1, uint160 sqrtPriceX96, uint128 liquidity, int24 tick)"
-        requiredEntities: []
       - event: "Mint(address sender, address indexed owner, int24 indexed tickLower, int24 indexed tickUpper, uint128 amount, uint256 amount0, uint256 amount1)"
-        requiredEntities: []
       - event: "Burn(address indexed owner, int24 indexed tickLower, int24 indexed tickUpper, uint128 amount, uint256 amount0, uint256 amount1)"
-        requiredEntities: []
 
 networks:
   - id: 10143 # Monad Testnet
     start_block: 0
     contracts:
-      # Wildcard mode - index all DEX pool events
       - name: UniswapV2Pool
         address:
-          - "*"
-
-      - name: UniswapV3Pool
-        address:
-          - "*"
+          - "0x0b924f975f67632c1b8af61b5b63415976a88791"
 
 field_selection:
   transaction_fields:
