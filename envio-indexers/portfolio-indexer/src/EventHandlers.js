@@ -54,6 +54,7 @@ ERC20Token.Transfer.handlerWithLoader({
     await updateUserBalance(context, to, tokenAddress, value, "add", timestamp);
     await updateUser(context, to, timestamp);
   }
+  }
 });
 
 async function updateUserBalance(
