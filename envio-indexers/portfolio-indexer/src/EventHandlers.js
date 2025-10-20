@@ -51,7 +51,6 @@ export const ERC20Token = {
         await updateUserBalance(context, to, tokenAddress, value, "add", timestamp);
         await updateUser(context, to, timestamp);
       }
-    },
   },
 };
 
