@@ -1,58 +1,69 @@
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
-// ES6 export for Envio hosted service compatibility
-export const ERC20Token = {
-  Transfer: async ({ event, context }) => {
-      const { from, to, value } = event.params;
-      const tokenAddress = event.srcAddress;
-      const timestamp = BigInt(event.block.timestamp);
-      const blockNumber = BigInt(event.block.number);
+// Import from generated files
+import { ERC20Token as ERC20 } from "../generated/src/Handlers.gen";
 
-      const transferEntity = {
-        id: `${event.transaction.hash}-${event.logIndex}`,
-        from: from,
-        to: to,
-        value: value,
-        tokenAddress: tokenAddress,
-        timestamp: timestamp,
-        transactionHash: event.transaction.hash,
-        blockNumber: blockNumber,
+// Register handler with wildcard mode to index ALL Transfer events on Monad
+ERC20.Transfer.handler(
+  async ({ event, context }) => {
+    const { from, to, value } = event.params;
+    const tokenAddress = event.srcAddress;
+    const timestamp = BigInt(event.block.timestamp);
+    const blockNumber = BigInt(event.block.number);
+
+    const transferEntity = {
+      id: `${event.transaction.hash}-${event.logIndex}`,
+      from: from,
+      to: to,
+      value: value,
+      tokenAddress: tokenAddress,
+      timestamp: timestamp,
+      transactionHash: event.transaction.hash,
+      blockNumber: blockNumber,
+    };
+
+    context.Transfer.set(transferEntity);
+
+    let tokenEntity = await context.Token.get(tokenAddress);
+    if (!tokenEntity) {
+      tokenEntity = {
+        id: tokenAddress,
+        address: tokenAddress,
+        holderCount: 0,
+        totalTransfers: 0,
+        lastActivity: timestamp,
       };
+    }
+    tokenEntity.totalTransfers += 1;
+    tokenEntity.lastActivity = timestamp;
+    context.Token.set(tokenEntity);
 
-      context.Transfer.set(transferEntity);
+    if (from !== ZERO_ADDRESS) {
+      await updateUserBalance(
+        context,
+        from,
+        tokenAddress,
+        value,
+        "subtract",
+        timestamp
+      );
+      await updateUser(context, from, timestamp);
+    }
 
-      let tokenEntity = await context.Token.get(tokenAddress);
-      if (!tokenEntity) {
-        tokenEntity = {
-          id: tokenAddress,
-          address: tokenAddress,
-          holderCount: 0,
-          totalTransfers: 0,
-          lastActivity: timestamp,
-        };
-      }
-      tokenEntity.totalTransfers += 1;
-      tokenEntity.lastActivity = timestamp;
-      context.Token.set(tokenEntity);
-
-      if (from !== ZERO_ADDRESS) {
-        await updateUserBalance(
-          context,
-          from,
-          tokenAddress,
-          value,
-          "subtract",
-          timestamp
-        );
-        await updateUser(context, from, timestamp);
-      }
-
-      if (to !== ZERO_ADDRESS) {
-        await updateUserBalance(context, to, tokenAddress, value, "add", timestamp);
-        await updateUser(context, to, timestamp);
-      }
+    if (to !== ZERO_ADDRESS) {
+      await updateUserBalance(
+        context,
+        to,
+        tokenAddress,
+        value,
+        "add",
+        timestamp
+      );
+      await updateUser(context, to, timestamp);
+    }
   },
-};
+  { wildcard: true }  // ← Enable wildcard indexing
+);
 
 async function updateUserBalance(
   context,

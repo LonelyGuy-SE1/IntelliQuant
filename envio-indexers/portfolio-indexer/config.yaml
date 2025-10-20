@@ -9,7 +9,6 @@ contracts:
     handler: src/EventHandlers.js
     events:
       - event: "Transfer(address indexed from, address indexed to, uint256 value)"
-        wildcard: true  # Enable wildcard to index ALL Transfer events
 
 # Networks to index
 networks:
