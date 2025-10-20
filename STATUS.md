@@ -12,19 +12,21 @@
 **API Key Provided**: ✅  
 **Code Pushed to GitHub**: ✅  
 **Indexer Configured**: ✅  
-**Backend Services Clean**: ✅  
+**Backend Services Clean**: ✅
 
 ---
 
 ## 📦 What's Deployed on GitHub
 
 ### Portfolio Indexer (`envio-indexers/portfolio-indexer/`)
+
 - **config.yaml** - Monad testnet (10143), WMON + ETH tokens, start_block: 0
 - **schema.graphql** - User, UserBalance, Transfer, Token entities
 - **EventHandlers.ts** - Transfer event processing with balance updates
 - **package.json** - envio ^2.30.1, pnpm 9.10.0 (Envio requirements met)
 
 ### Backend Services (`backend/services/`)
+
 - **ai-crestal.js** - Crestal Network Agent integration (NEW)
 - **ai-analysis.js** - Portfolio analysis (cleaned, Crestal-only)
 - **envio-client.js** - GraphQL queries (no mock data)
@@ -33,11 +35,13 @@
 - **risk-analysis.js** - Portfolio risk assessment (unchanged)
 
 ### Frontend (`frontend/src/services/`)
+
 - **smart-account.js** - Fixed `signer` parameter (v4.0)
 - **delegation.js** - Delegations API (unchanged)
 - **transactions.js** - Transaction utilities (unchanged)
 
 ### Deleted (Cleanup)
+
 - ❌ mock-data.js
 - ❌ ai-openrouter.js
 - ❌ ai-intentkit.js
@@ -48,7 +52,9 @@
 ## 🚀 Next Steps (YOUR TODO)
 
 ### 1. Deploy Envio Indexer (20 mins)
+
 Follow **QUICK_START.md**:
+
 1. Login: https://envio.dev/app/login
 2. Install GitHub App
 3. Add Indexer (point to `envio-indexers/portfolio-indexer`)
@@ -56,13 +62,16 @@ Follow **QUICK_START.md**:
 5. Copy GraphQL endpoint
 
 ### 2. Configure Backend (2 mins)
+
 Update `backend/.env`:
+
 ```env
 ENVIO_PORTFOLIO_ENDPOINT=<your endpoint from step 1>
 CRESTAL_API_KEY=<get from Crestal>
 ```
 
 ### 3. Test Full Stack (10 mins)
+
 ```bash
 # Terminal 1: Backend
 cd backend && npm install && npm start
@@ -74,7 +83,9 @@ cd frontend && npm run dev
 ```
 
 ### 4. Record Demo (15 mins)
+
 Show:
+
 - Envio indexer syncing data
 - Portfolio loading from Envio GraphQL
 - AI analysis from Crestal
@@ -85,11 +96,13 @@ Show:
 ## 📊 Technical Summary
 
 ### Monad Testnet Integration
+
 - **Chain ID**: 10143
 - **RPC**: https://testnet-rpc.monad.xyz
 - **Tokens**: WMON (0x760AfE...), ETH (0x836047...)
 
 ### Envio Configuration
+
 - **Indexer Type**: Portfolio (ERC-20 transfers)
 - **Events**: Transfer(address,address,uint256)
 - **Entities**: 4 types (User, UserBalance, Transfer, Token)
@@ -97,12 +110,14 @@ Show:
 - **Start Block**: 0 (HyperSync auto-detects)
 
 ### AI Integration
+
 - **Provider**: Crestal Network Agent
 - **API**: Conversation-based (create → send → parse)
 - **Fallback**: Rule-based analysis if API fails
 - **Features**: Portfolio insights, trading recommendations
 
 ### MetaMask Delegation
+
 - **Version**: @codefi/delegator-core-viem ^0.13.0
 - **Type**: Hybrid smart account
 - **Fixed**: signer parameter (was: signatory)
@@ -113,6 +128,7 @@ Show:
 ## 🔧 Environment Requirements
 
 ### Backend `.env` Template
+
 ```env
 PORT=3001
 NODE_ENV=development
@@ -159,6 +175,7 @@ TOKEN_ETH=0x836047a99e11f376522b447bffb6e3495dd0637c
 ## 🎓 Resources Referenced
 
 All docs fully read and understood:
+
 - ✅ Envio Hosted Service deployment
 - ✅ Envio configuration file structure
 - ✅ Monad testnet integration

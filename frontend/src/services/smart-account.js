@@ -3,10 +3,13 @@
  * Creates and manages smart accounts on Monad testnet
  */
 
-import { createPublicClient, createWalletClient, custom, http } from 'viem';
-import { createBundlerClient } from 'viem/account-abstraction';
-import { Implementation, toMetaMaskSmartAccount } from '@metamask/delegation-toolkit';
-import monadTestnet from '../config/chains.js';
+import { createPublicClient, createWalletClient, custom, http } from "viem";
+import { createBundlerClient } from "viem/account-abstraction";
+import {
+  Implementation,
+  toMetaMaskSmartAccount,
+} from "@metamask/delegation-toolkit";
+import monadTestnet from "../config/chains.js";
 
 let smartAccountInstance = null;
 let publicClientInstance = null;
@@ -33,7 +36,9 @@ export function getBundlerClient() {
     const bundlerUrl = import.meta.env.VITE_BUNDLER_URL;
 
     if (!bundlerUrl) {
-      throw new Error('VITE_BUNDLER_URL not configured. Please set up a bundler for Monad testnet.');
+      throw new Error(
+        "VITE_BUNDLER_URL not configured. Please set up a bundler for Monad testnet."
+      );
     }
 
     bundlerClientInstance = createBundlerClient({
@@ -49,34 +54,36 @@ export function getBundlerClient() {
  * @returns {Promise<string>} Connected address
  */
 export async function connectWallet() {
-  if (typeof window.ethereum === 'undefined') {
-    throw new Error('MetaMask is not installed');
+  if (typeof window.ethereum === "undefined") {
+    throw new Error("MetaMask is not installed");
   }
 
   try {
     // Request account access
     const accounts = await window.ethereum.request({
-      method: 'eth_requestAccounts'
+      method: "eth_requestAccounts",
     });
 
     // Switch to Monad testnet if not already
     try {
       await window.ethereum.request({
-        method: 'wallet_switchEthereumChain',
+        method: "wallet_switchEthereumChain",
         params: [{ chainId: `0x${monadTestnet.id.toString(16)}` }],
       });
     } catch (switchError) {
       // Chain not added, add it
       if (switchError.code === 4902) {
         await window.ethereum.request({
-          method: 'wallet_addEthereumChain',
-          params: [{
-            chainId: `0x${monadTestnet.id.toString(16)}`,
-            chainName: monadTestnet.name,
-            nativeCurrency: monadTestnet.nativeCurrency,
-            rpcUrls: monadTestnet.rpcUrls.default.http,
-            blockExplorerUrls: [monadTestnet.blockExplorers.default.url],
-          }],
+          method: "wallet_addEthereumChain",
+          params: [
+            {
+              chainId: `0x${monadTestnet.id.toString(16)}`,
+              chainName: monadTestnet.name,
+              nativeCurrency: monadTestnet.nativeCurrency,
+              rpcUrls: monadTestnet.rpcUrls.default.http,
+              blockExplorerUrls: [monadTestnet.blockExplorers.default.url],
+            },
+          ],
         });
       } else {
         throw switchError;
@@ -85,7 +92,7 @@ export async function connectWallet() {
 
     return accounts[0];
   } catch (error) {
-    console.error('Error connecting wallet:', error);
+    console.error("Error connecting wallet:", error);
     throw error;
   }
 }
@@ -97,7 +104,9 @@ export async function connectWallet() {
  */
 export async function createSmartAccount(ownerAddress = null) {
   // Version marker for cache debugging
-  console.log('🔧 Smart Account Service v4.0 - Fixed signer parameter (not signatory)');
+  console.log(
+    "🔧 Smart Account Service v4.0 - Fixed signer parameter (not signatory)"
+  );
 
   try {
     const publicClient = getPublicClient();
@@ -108,17 +117,19 @@ export async function createSmartAccount(ownerAddress = null) {
       owner = await connectWallet();
     }
 
-    console.log('✅ Connected owner:', owner);
+    console.log("✅ Connected owner:", owner);
 
     // Validate window.ethereum exists
-    if (typeof window.ethereum === 'undefined') {
-      throw new Error('MetaMask not found. Please install MetaMask extension.');
+    if (typeof window.ethereum === "undefined") {
+      throw new Error("MetaMask not found. Please install MetaMask extension.");
     }
 
     // Get the account address first
-    const [accountAddress] = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    const [accountAddress] = await window.ethereum.request({
+      method: "eth_requestAccounts",
+    });
 
-    console.log('✅ Account address:', accountAddress);
+    console.log("✅ Account address:", accountAddress);
 
     // Create wallet client with MetaMask and set account
     const walletClient = createWalletClient({
@@ -127,19 +138,19 @@ export async function createSmartAccount(ownerAddress = null) {
       transport: custom(window.ethereum),
     });
 
-    console.log('✅ Wallet client created:', {
+    console.log("✅ Wallet client created:", {
       hasClient: !!walletClient,
       hasAccount: !!walletClient.account,
-      accountAddress: walletClient.account?.address
+      accountAddress: walletClient.account?.address,
     });
 
     // Create signer object with proper structure
     // According to MetaMask docs, use 'signer' not 'signatory'
     const signer = {
-      walletClient: walletClient
+      walletClient: walletClient,
     };
 
-    console.log('✅ Signer ready:', {
+    console.log("✅ Signer ready:", {
       hasWalletClient: !!signer.walletClient,
     });
 
@@ -154,12 +165,15 @@ export async function createSmartAccount(ownerAddress = null) {
 
     smartAccountInstance = smartAccount;
 
-    console.log('Smart account created:', smartAccount.address);
-    console.log('Deployed:', await isSmartAccountDeployed(smartAccount.address));
+    console.log("Smart account created:", smartAccount.address);
+    console.log(
+      "Deployed:",
+      await isSmartAccountDeployed(smartAccount.address)
+    );
 
     return smartAccount;
   } catch (error) {
-    console.error('Error creating smart account:', error);
+    console.error("Error creating smart account:", error);
     throw error;
   }
 }
@@ -181,9 +195,9 @@ export async function isSmartAccountDeployed(address) {
   try {
     const publicClient = getPublicClient();
     const code = await publicClient.getBytecode({ address });
-    return code !== undefined && code !== '0x';
+    return code !== undefined && code !== "0x";
   } catch (error) {
-    console.error('Error checking deployment:', error);
+    console.error("Error checking deployment:", error);
     return false;
   }
 }
@@ -199,7 +213,7 @@ export async function getSmartAccountBalance(address) {
     const balance = await publicClient.getBalance({ address });
     return (Number(balance) / 1e18).toFixed(4);
   } catch (error) {
-    console.error('Error fetching balance:', error);
+    console.error("Error fetching balance:", error);
     throw error;
   }
 }

@@ -2,7 +2,7 @@
 
 **Status**: Code pushed to GitHub ✅  
 **Envio Fix**: Import from "generated" added ✅  
-**Crestal API Key**: Configured ✅  
+**Crestal API Key**: Configured ✅
 
 ---
 
@@ -19,7 +19,8 @@ import { ERC20Token } from "generated";
 ERC20Token.Transfer.handler(async ({ event, context }) => {
 ```
 
-**Expected Result**: 
+**Expected Result**:
+
 - ✅ "Codegen successful"
 - ✅ "Starting indexer..."
 - ✅ "Syncing..." (it will start indexing Monad testnet blocks)
@@ -48,6 +49,7 @@ curl http://localhost:3001/api/ai/test
 ```
 
 **Expected Response**:
+
 ```json
 {
   "success": true,
@@ -83,6 +85,7 @@ ENVIO_PORTFOLIO_ENDPOINT=https://indexer.envio.dev/abc123xyz/v1/graphql
 ```
 
 Restart backend:
+
 ```bash
 # Ctrl+C to stop, then:
 npm start
@@ -104,16 +107,19 @@ Open: http://localhost:5173
 ### Testing Flow
 
 1. **Connect Wallet**
-   - Click "Connect Wallet" 
+
+   - Click "Connect Wallet"
    - Approve MetaMask
    - Should see your address
 
 2. **Create Smart Account**
+
    - Click "Create Smart Account"
    - Sign in MetaMask
    - Should see smart account address
 
 3. **Load Portfolio** (needs Envio endpoint configured)
+
    - Click "Load Portfolio"
    - Should see token balances from Envio
    - **NEW**: Should auto-show AI analysis below!
@@ -165,6 +171,7 @@ The portfolio page now shows:
 ### Envio Still Failing?
 
 Check the error message. If it says anything about:
+
 - "Cannot find name 'ERC20Token'" → Old code cached, wait for redeploy
 - "Module not found" → Check package.json has envio ^2.30.1
 - Network errors → Check Monad RPC is accessible
@@ -172,6 +179,7 @@ Check the error message. If it says anything about:
 ### Crestal Not Working?
 
 Test the API key:
+
 ```bash
 curl -H "Authorization: Bearer sk-YlPzDMJbLwKoCvIBbGdYIuLsDDEsXlxsWKFSyIxSbLcCmBoK" \
   -X POST https://open.service.crestal.network/v1/conversation
@@ -184,6 +192,7 @@ If error → API key invalid
 ### Frontend Not Showing AI?
 
 Check browser console (F12):
+
 - Look for errors in Network tab
 - Check if `/portfolio/:address/analyze` endpoint returns data
 - Verify `displayAIAnalysis()` function is being called
@@ -207,6 +216,7 @@ Check browser console (F12):
 ## 📊 What Changed
 
 ### Envio Fix
+
 ```diff
 + import { ERC20Token } from "generated";
 - ERC20Token.Transfer.handler(async ({ event, context }: any) => {
@@ -214,10 +224,12 @@ Check browser console (F12):
 ```
 
 ### Backend
+
 - Added Crestal API key: `sk-YlPzDMJbLwKoCvIBbGdYIuLsDDEsXlxsWKFSyIxSbLcCmBoK`
 - Added test endpoint: `GET /api/ai/test`
 
 ### Frontend
+
 - `handleLoadPortfolio()` now auto-calls AI analysis
 - New `displayAIAnalysis()` function shows Crestal insights
 - Portfolio section shows AI badge when Crestal is used

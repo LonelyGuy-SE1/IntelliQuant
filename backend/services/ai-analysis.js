@@ -3,8 +3,8 @@
  * Uses Crestal Network Agent for intelligent insights
  */
 
-import envioClient from './envio-client.js';
-import crestalAI from './ai-crestal.js';
+import envioClient from "./envio-client.js";
+import crestalAI from "./ai-crestal.js";
 
 /**
  * Generate AI-powered portfolio insights
@@ -21,11 +21,10 @@ export async function analyzePortfolioWithAI(userAddress) {
     }
 
     // Use Crestal Agent for analysis
-    console.log('🤖 Using Crestal AI Agent');
+    console.log("🤖 Using Crestal AI Agent");
     return await crestalAI.analyzePortfolioWithCrestal(portfolio);
-
   } catch (error) {
-    console.error('AI analysis error:', error);
+    console.error("AI analysis error:", error);
     throw error;
   }
 }
@@ -37,23 +36,31 @@ function calculatePortfolioMetrics(balances) {
   const totalValue = balances.reduce((sum, b) => sum + Number(b.balance), 0);
 
   // Calculate each position's percentage
-  const positions = balances.map(b => ({
-    token: b.tokenAddress,
-    value: Number(b.balance),
-    percentage: (Number(b.balance) / totalValue) * 100
-  })).sort((a, b) => b.value - a.value);
+  const positions = balances
+    .map((b) => ({
+      token: b.tokenAddress,
+      value: Number(b.balance),
+      percentage: (Number(b.balance) / totalValue) * 100,
+    }))
+    .sort((a, b) => b.value - a.value);
 
   // Diversification score (0-100)
   // Perfect diversification = equal weights, Poor = concentrated
   const expectedWeight = 100 / balances.length;
-  const diversificationScore = balances.length === 1 ? 0 :
-    100 - positions.reduce((sum, p) =>
-      sum + Math.abs(p.percentage - expectedWeight), 0
-    ) / 2;
+  const diversificationScore =
+    balances.length === 1
+      ? 0
+      : 100 -
+        positions.reduce(
+          (sum, p) => sum + Math.abs(p.percentage - expectedWeight),
+          0
+        ) /
+          2;
 
   // Concentration (Herfindahl index)
-  const concentration = positions.reduce((sum, p) =>
-    sum + Math.pow(p.percentage / 100, 2), 0
+  const concentration = positions.reduce(
+    (sum, p) => sum + Math.pow(p.percentage / 100, 2),
+    0
   );
 
   return {
@@ -63,7 +70,7 @@ function calculatePortfolioMetrics(balances) {
     concentration,
     topHolding: positions[0],
     largestPositionPercent: positions[0].percentage,
-    numberOfTokens: balances.length
+    numberOfTokens: balances.length,
   };
 }
 
@@ -75,23 +82,45 @@ function generateInsights(metrics, balances) {
 
   // Diversification insights
   if (metrics.numberOfTokens === 1) {
-    insights.push("⚠️ Single-token portfolio detected. This carries high concentration risk.");
-    insights.push("💡 Consider diversifying into 2-4 additional assets to reduce risk.");
+    insights.push(
+      "⚠️ Single-token portfolio detected. This carries high concentration risk."
+    );
+    insights.push(
+      "💡 Consider diversifying into 2-4 additional assets to reduce risk."
+    );
   } else if (metrics.numberOfTokens <= 3) {
-    insights.push(`📊 You hold ${metrics.numberOfTokens} tokens. Good start on diversification!`);
+    insights.push(
+      `📊 You hold ${metrics.numberOfTokens} tokens. Good start on diversification!`
+    );
   } else if (metrics.numberOfTokens <= 6) {
-    insights.push(`✅ Well-diversified portfolio with ${metrics.numberOfTokens} tokens.`);
+    insights.push(
+      `✅ Well-diversified portfolio with ${metrics.numberOfTokens} tokens.`
+    );
   } else {
-    insights.push(`🎯 Highly diversified with ${metrics.numberOfTokens} tokens. Watch for over-diversification.`);
+    insights.push(
+      `🎯 Highly diversified with ${metrics.numberOfTokens} tokens. Watch for over-diversification.`
+    );
   }
 
   // Concentration insights
   if (metrics.largestPositionPercent > 70) {
-    insights.push(`⚠️ Your largest position (${metrics.largestPositionPercent.toFixed(1)}%) is heavily concentrated.`);
+    insights.push(
+      `⚠️ Your largest position (${metrics.largestPositionPercent.toFixed(
+        1
+      )}%) is heavily concentrated.`
+    );
   } else if (metrics.largestPositionPercent > 50) {
-    insights.push(`📊 Top holding represents ${metrics.largestPositionPercent.toFixed(1)}% - moderate concentration.`);
+    insights.push(
+      `📊 Top holding represents ${metrics.largestPositionPercent.toFixed(
+        1
+      )}% - moderate concentration.`
+    );
   } else if (metrics.largestPositionPercent > 30) {
-    insights.push(`✅ Balanced position sizing with top holding at ${metrics.largestPositionPercent.toFixed(1)}%.`);
+    insights.push(
+      `✅ Balanced position sizing with top holding at ${metrics.largestPositionPercent.toFixed(
+        1
+      )}%.`
+    );
   } else {
     insights.push(`🎯 Well-balanced allocations across your portfolio.`);
   }
@@ -100,9 +129,13 @@ function generateInsights(metrics, balances) {
   if (metrics.diversificationScore < 30) {
     insights.push("🔴 Low diversification score suggests uneven allocation.");
   } else if (metrics.diversificationScore < 60) {
-    insights.push("🟡 Moderate diversification - room for improvement in balance.");
+    insights.push(
+      "🟡 Moderate diversification - room for improvement in balance."
+    );
   } else {
-    insights.push("🟢 Strong diversification score indicates well-balanced positions.");
+    insights.push(
+      "🟢 Strong diversification score indicates well-balanced positions."
+    );
   }
 
   return insights;
@@ -116,22 +149,36 @@ function generateRecommendations(metrics, balances) {
 
   // Diversification recommendations
   if (metrics.numberOfTokens === 1) {
-    recommendations.push("Add 2-3 more tokens to build a diversified portfolio");
-    recommendations.push("Research liquid pools on Monad DEXs for trading opportunities");
+    recommendations.push(
+      "Add 2-3 more tokens to build a diversified portfolio"
+    );
+    recommendations.push(
+      "Research liquid pools on Monad DEXs for trading opportunities"
+    );
   } else if (metrics.numberOfTokens < 3) {
-    recommendations.push("Consider adding 1-2 more tokens for better risk distribution");
+    recommendations.push(
+      "Consider adding 1-2 more tokens for better risk distribution"
+    );
   }
 
   // Position sizing recommendations
   if (metrics.largestPositionPercent > 60) {
-    recommendations.push(`Reduce concentration in top holding from ${metrics.largestPositionPercent.toFixed(1)}% to <50%`);
-    recommendations.push("Gradually rebalance by taking profits from largest position");
+    recommendations.push(
+      `Reduce concentration in top holding from ${metrics.largestPositionPercent.toFixed(
+        1
+      )}% to <50%`
+    );
+    recommendations.push(
+      "Gradually rebalance by taking profits from largest position"
+    );
   }
 
   // Rebalancing recommendations
   if (metrics.diversificationScore < 50 && metrics.numberOfTokens > 2) {
     recommendations.push("Rebalance portfolio to achieve more even allocation");
-    recommendations.push("Target 20-35% allocation per position for balanced risk");
+    recommendations.push(
+      "Target 20-35% allocation per position for balanced risk"
+    );
   }
 
   // General recommendations
@@ -139,7 +186,9 @@ function generateRecommendations(metrics, balances) {
   recommendations.push("Set up alerts for significant portfolio value changes");
 
   if (metrics.numberOfTokens >= 3) {
-    recommendations.push("Review and rebalance quarterly to maintain target allocations");
+    recommendations.push(
+      "Review and rebalance quarterly to maintain target allocations"
+    );
   }
 
   return recommendations;
@@ -180,41 +229,47 @@ function generateSummary(metrics, riskLevel) {
   const divScore = metrics.diversificationScore.toFixed(0);
   const topPercent = metrics.largestPositionPercent.toFixed(1);
 
-  const riskEmoji = riskLevel === "high" ? "🔴" : riskLevel === "medium" ? "🟡" : "🟢";
+  const riskEmoji =
+    riskLevel === "high" ? "🔴" : riskLevel === "medium" ? "🟡" : "🟢";
 
-  return `${riskEmoji} ${tokenCount}-token portfolio with ${divScore}% diversification score. ` +
+  return (
+    `${riskEmoji} ${tokenCount}-token portfolio with ${divScore}% diversification score. ` +
     `Top position: ${topPercent}%. Risk level: ${riskLevel.toUpperCase()}. ` +
-    (riskLevel === "high" ? "Consider rebalancing to reduce concentration." :
-     riskLevel === "medium" ? "Moderate risk profile - monitor closely." :
-     "Well-balanced portfolio structure.");
+    (riskLevel === "high"
+      ? "Consider rebalancing to reduce concentration."
+      : riskLevel === "medium"
+      ? "Moderate risk profile - monitor closely."
+      : "Well-balanced portfolio structure.")
+  );
 }
 
 function generateEmptyPortfolioInsights() {
   return {
-    summary: "No portfolio detected. Start by acquiring some tokens on Monad testnet!",
+    summary:
+      "No portfolio detected. Start by acquiring some tokens on Monad testnet!",
     riskLevel: "unknown",
     diversification: 0,
     insights: [
       "💡 Your wallet is empty. Consider acquiring some tokens to get started.",
       "🎯 A well-diversified portfolio typically holds 3-8 different assets.",
-      "🛡️ Always research tokens before investing."
+      "🛡️ Always research tokens before investing.",
     ],
     recommendations: [
       "Acquire WMON (Wrapped MON) as a base asset",
       "Consider adding 2-3 other tokens for diversification",
-      "Monitor market conditions on DEX pools"
+      "Monitor market conditions on DEX pools",
     ],
     metrics: {
       totalTokens: 0,
       concentration: 0,
-      topHolding: null
+      topHolding: null,
     },
     aiPowered: false,
-    provider: 'local',
-    timestamp: Date.now()
+    provider: "local",
+    timestamp: Date.now(),
   };
 }
 
 export default {
-  analyzePortfolioWithAI
+  analyzePortfolioWithAI,
 };

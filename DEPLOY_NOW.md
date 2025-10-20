@@ -10,16 +10,19 @@ pnpm install
 ```
 
 **Test locally first:**
+
 ```bash
 envio dev
 ```
 
 **Deploy to hosted service:**
+
 ```bash
 envio deploy
 ```
 
 You'll get endpoint like:
+
 ```
 https://indexer.envio.dev/YOUR-ID/v1/graphql
 ```
@@ -32,6 +35,7 @@ cp .env.example .env
 ```
 
 Edit `.env`:
+
 ```
 PORT=3001
 CRESTAL_API_KEY=your_key_here
@@ -67,6 +71,7 @@ npm run dev
 ## Troubleshooting Envio
 
 ### Indexer not syncing?
+
 ```bash
 cd envio-indexers/portfolio-indexer
 envio dev
@@ -74,11 +79,13 @@ envio dev
 ```
 
 ### No data showing?
+
 - Check if tokens exist on Monad testnet
 - Verify contract addresses in config.yaml
 - Test GraphQL endpoint directly
 
 ### Test GraphQL directly:
+
 ```bash
 curl -X POST https://indexer.envio.dev/YOUR-ID/v1/graphql \
   -H "Content-Type: application/json" \
@@ -88,6 +95,7 @@ curl -X POST https://indexer.envio.dev/YOUR-ID/v1/graphql \
 ## For Crestal Integration
 
 Get API key, then:
+
 ```bash
 cd backend
 # Update .env
@@ -106,7 +114,7 @@ backend/
     envio-client.js     ✅ Envio GraphQL queries
     scoring-engine.js   ✅ Token health scoring
     recommendations.js  ✅ AI recommendations
-    
+
 envio-indexers/
   portfolio-indexer/    ✅ Tracks token balances
     config.yaml
@@ -124,6 +132,7 @@ envio-indexers/
 ## You Have 3-4 Hours
 
 **Priority Order:**
+
 1. **Deploy Envio Portfolio Indexer** (30-60 min) - THIS GETS YOU $1K
 2. **Get backend talking to Envio** (10 min)
 3. **Test frontend loads real data** (10 min)

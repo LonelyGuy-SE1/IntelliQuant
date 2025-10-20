@@ -10,16 +10,19 @@
 ## ⚡ 5-Minute Deployment
 
 ### Step 1: Login to Envio
+
 👉 **Go to**: https://envio.dev/app/login
 
 - Login with GitHub
 - Select your account/org
 
 ### Step 2: Install GitHub App
+
 - Click **"Install GitHub App"**
 - Grant access to **IntelliQuant** repo
 
 ### Step 3: Add Indexer
+
 Click **"Add Indexer"**, then configure:
 
 ```
@@ -31,22 +34,28 @@ Name: IntelliQuant Portfolio
 ```
 
 ### Step 4: Automatic Deployment
+
 ✅ **Your code is already pushed to GitHub!**
 
 Envio will automatically:
+
 - Detect the push
 - Build the indexer
 - Start syncing Monad testnet data
 - Provide GraphQL endpoint
 
 ### Step 5: Get Your Endpoint
+
 Once deployed, copy the GraphQL endpoint (looks like):
+
 ```
 https://indexer.envio.dev/xxxxx/v1/graphql
 ```
 
 ### Step 6: Update Backend
+
 Open `backend/.env` and replace:
+
 ```env
 ENVIO_PORTFOLIO_ENDPOINT=https://indexer.envio.dev/YOUR_ID/v1/graphql
 CRESTAL_API_KEY=your_crestal_key_here
@@ -104,6 +113,7 @@ IntelliQuant/
 ## 🎯 After Deployment
 
 1. **Start Backend**:
+
    ```bash
    cd backend
    npm install
@@ -111,6 +121,7 @@ IntelliQuant/
    ```
 
 2. **Start Frontend**:
+
    ```bash
    cd frontend
    npm run dev

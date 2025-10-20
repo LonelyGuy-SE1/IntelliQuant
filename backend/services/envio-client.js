@@ -3,14 +3,18 @@
  * Queries Envio indexers for blockchain data
  */
 
-import { GraphQLClient, gql } from 'graphql-request';
-import dotenv from 'dotenv';
+import { GraphQLClient, gql } from "graphql-request";
+import dotenv from "dotenv";
 
 dotenv.config();
 
 // Initialize GraphQL clients for each indexer
-const portfolioClient = new GraphQLClient(process.env.ENVIO_PORTFOLIO_ENDPOINT || 'http://localhost:8080/v1/graphql');
-const dexClient = new GraphQLClient(process.env.ENVIO_DEX_ENDPOINT || 'http://localhost:8080/v1/graphql');
+const portfolioClient = new GraphQLClient(
+  process.env.ENVIO_PORTFOLIO_ENDPOINT || "http://localhost:8080/v1/graphql"
+);
+const dexClient = new GraphQLClient(
+  process.env.ENVIO_DEX_ENDPOINT || "http://localhost:8080/v1/graphql"
+);
 
 /**
  * Get user portfolio balances
@@ -36,10 +40,12 @@ export async function getUserPortfolio(address) {
   `;
 
   try {
-    const data = await portfolioClient.request(query, { address: address.toLowerCase() });
+    const data = await portfolioClient.request(query, {
+      address: address.toLowerCase(),
+    });
     return data.User[0] || null;
   } catch (error) {
-    console.error('Error fetching portfolio:', error.message);
+    console.error("Error fetching portfolio:", error.message);
     throw error;
   }
 }
@@ -70,10 +76,12 @@ export async function getPoolData(poolAddress) {
   `;
 
   try {
-    const data = await dexClient.request(query, { poolAddress: poolAddress.toLowerCase() });
+    const data = await dexClient.request(query, {
+      poolAddress: poolAddress.toLowerCase(),
+    });
     return data.Pool[0] || null;
   } catch (error) {
-    console.error('Error fetching pool data:', error.message);
+    console.error("Error fetching pool data:", error.message);
     throw error;
   }
 }
@@ -89,10 +97,7 @@ export async function get24hVolume(poolAddress) {
   const query = gql`
     query Get24hVolume($poolAddress: String!, $since: BigInt!) {
       SwapEvent_aggregate(
-        where: {
-          pool: { _eq: $poolAddress }
-          timestamp: { _gte: $since }
-        }
+        where: { pool: { _eq: $poolAddress }, timestamp: { _gte: $since } }
       ) {
         aggregate {
           count
@@ -110,18 +115,20 @@ export async function get24hVolume(poolAddress) {
   try {
     const data = await dexClient.request(query, {
       poolAddress: poolAddress.toLowerCase(),
-      since: oneDayAgo.toString()
+      since: oneDayAgo.toString(),
     });
 
     const agg = data.SwapEvent_aggregate.aggregate;
 
     return {
       swapCount: agg.count || 0,
-      volume0: BigInt(agg.sum?.amount0In || 0) + BigInt(agg.sum?.amount0Out || 0),
-      volume1: BigInt(agg.sum?.amount1In || 0) + BigInt(agg.sum?.amount1Out || 0)
+      volume0:
+        BigInt(agg.sum?.amount0In || 0) + BigInt(agg.sum?.amount0Out || 0),
+      volume1:
+        BigInt(agg.sum?.amount1In || 0) + BigInt(agg.sum?.amount1Out || 0),
     };
   } catch (error) {
-    console.error('Error fetching 24h volume:', error.message);
+    console.error("Error fetching 24h volume:", error.message);
     return { swapCount: 0, volume0: 0n, volume1: 0n };
   }
 }
@@ -157,11 +164,11 @@ export async function getRecentSwaps(poolAddress, limit = 50) {
   try {
     const data = await dexClient.request(query, {
       poolAddress: poolAddress.toLowerCase(),
-      limit
+      limit,
     });
     return data.SwapEvent || [];
   } catch (error) {
-    console.error('Error fetching recent swaps:', error.message);
+    console.error("Error fetching recent swaps:", error.message);
     return [];
   }
 }
@@ -173,15 +180,12 @@ export async function getRecentSwaps(poolAddress, limit = 50) {
  * @returns {Promise<Array>} Hourly snapshot data
  */
 export async function getPoolSnapshots(poolAddress, hours = 24) {
-  const hoursAgo = BigInt(Math.floor(Date.now() / 1000) - (hours * 3600));
+  const hoursAgo = BigInt(Math.floor(Date.now() / 1000) - hours * 3600);
 
   const query = gql`
     query GetPoolSnapshots($poolAddress: String!, $since: BigInt!) {
       PoolHourlySnapshot(
-        where: {
-          pool: { _eq: $poolAddress }
-          timestamp: { _gte: $since }
-        }
+        where: { pool: { _eq: $poolAddress }, timestamp: { _gte: $since } }
         order_by: { timestamp: asc }
       ) {
         timestamp
@@ -199,11 +203,11 @@ export async function getPoolSnapshots(poolAddress, hours = 24) {
   try {
     const data = await dexClient.request(query, {
       poolAddress: poolAddress.toLowerCase(),
-      since: hoursAgo.toString()
+      since: hoursAgo.toString(),
     });
     return data.PoolHourlySnapshot || [];
   } catch (error) {
-    console.error('Error fetching pool snapshots:', error.message);
+    console.error("Error fetching pool snapshots:", error.message);
     return [];
   }
 }
@@ -239,10 +243,12 @@ export async function getTokenPools(tokenAddress) {
   `;
 
   try {
-    const data = await dexClient.request(query, { tokenAddress: tokenAddress.toLowerCase() });
+    const data = await dexClient.request(query, {
+      tokenAddress: tokenAddress.toLowerCase(),
+    });
     return data.Pool || [];
   } catch (error) {
-    console.error('Error fetching token pools:', error.message);
+    console.error("Error fetching token pools:", error.message);
     return [];
   }
 }
@@ -254,9 +260,17 @@ export async function getTokenPools(tokenAddress) {
  * @param {number} limit - Number of transfers to return
  * @returns {Promise<Array>} Large transfer events
  */
-export async function getLargeTransfers(tokenAddress, minAmount = "1000000000000000000000", limit = 100) {
+export async function getLargeTransfers(
+  tokenAddress,
+  minAmount = "1000000000000000000000",
+  limit = 100
+) {
   const query = gql`
-    query GetLargeTransfers($tokenAddress: String!, $minAmount: BigInt!, $limit: Int!) {
+    query GetLargeTransfers(
+      $tokenAddress: String!
+      $minAmount: BigInt!
+      $limit: Int!
+    ) {
       Transfer(
         where: {
           tokenAddress: { _eq: $tokenAddress }
@@ -279,11 +293,11 @@ export async function getLargeTransfers(tokenAddress, minAmount = "1000000000000
     const data = await portfolioClient.request(query, {
       tokenAddress: tokenAddress.toLowerCase(),
       minAmount,
-      limit
+      limit,
     });
     return data.Transfer || [];
   } catch (error) {
-    console.error('Error fetching large transfers:', error.message);
+    console.error("Error fetching large transfers:", error.message);
     return [];
   }
 }
@@ -295,5 +309,5 @@ export default {
   getRecentSwaps,
   getPoolSnapshots,
   getTokenPools,
-  getLargeTransfers
+  getLargeTransfers,
 };

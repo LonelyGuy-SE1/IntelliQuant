@@ -3,13 +3,13 @@
  * API Docs: https://open.service.crestal.network/v1/redoc
  */
 
-import axios from 'axios';
-import dotenv from 'dotenv';
+import axios from "axios";
+import dotenv from "dotenv";
 
 dotenv.config();
 
-const CRESTAL_API_KEY = process.env.CRESTAL_API_KEY || '';
-const CRESTAL_BASE_URL = 'https://open.service.crestal.network/v1';
+const CRESTAL_API_KEY = process.env.CRESTAL_API_KEY || "";
+const CRESTAL_BASE_URL = "https://open.service.crestal.network/v1";
 
 /**
  * Analyze portfolio using Crestal Agent
@@ -25,7 +25,7 @@ export async function analyzePortfolioWithCrestal(portfolio) {
     const response = await sendMessage(conversationId, prompt);
     return parseAgentResponse(response, portfolio);
   } catch (error) {
-    console.error('Crestal error:', error.message);
+    console.error("Crestal error:", error.message);
     return generateFallback(portfolio);
   }
 }
@@ -33,15 +33,24 @@ export async function analyzePortfolioWithCrestal(portfolio) {
 /**
  * Generate recommendations using Crestal Agent
  */
-export async function generateCrestalRecommendations(tokens, portfolioData = null) {
+export async function generateCrestalRecommendations(
+  tokens,
+  portfolioData = null
+) {
   try {
     const conversationId = await createConversation();
     const prompt = buildRecommendationsPrompt(tokens, portfolioData);
     const response = await sendMessage(conversationId, prompt);
     return parseRecommendations(response);
   } catch (error) {
-    console.error('Crestal recommendations error:', error.message);
-    return [{action: 'HOLD', reason: 'Monitor market conditions', confidence: 'medium'}];
+    console.error("Crestal recommendations error:", error.message);
+    return [
+      {
+        action: "HOLD",
+        reason: "Monitor market conditions",
+        confidence: "medium",
+      },
+    ];
   }
 }
 
@@ -51,9 +60,9 @@ async function createConversation() {
     {},
     {
       headers: {
-        'Authorization': `Bearer ${CRESTAL_API_KEY}`,
-        'Content-Type': 'application/json'
-      }
+        Authorization: `Bearer ${CRESTAL_API_KEY}`,
+        "Content-Type": "application/json",
+      },
     }
   );
   return response.data.conversation_id;
@@ -65,50 +74,59 @@ async function sendMessage(conversationId, message) {
     { message, stream: false },
     {
       headers: {
-        'Authorization': `Bearer ${CRESTAL_API_KEY}`,
-        'Content-Type': 'application/json'
-      }
+        Authorization: `Bearer ${CRESTAL_API_KEY}`,
+        "Content-Type": "application/json",
+      },
     }
   );
   return response.data.response;
 }
 
 function buildPortfolioPrompt(portfolio) {
-  const total = portfolio.balances.reduce((sum, b) => sum + Number(b.balance), 0);
-  const positions = portfolio.balances.map((b, i) => {
-    const pct = ((Number(b.balance) / total) * 100).toFixed(1);
-    return `${i+1}. ${b.token || 'Token'}: ${pct}%`;
-  }).join('\n');
+  const total = portfolio.balances.reduce(
+    (sum, b) => sum + Number(b.balance),
+    0
+  );
+  const positions = portfolio.balances
+    .map((b, i) => {
+      const pct = ((Number(b.balance) / total) * 100).toFixed(1);
+      return `${i + 1}. ${b.token || "Token"}: ${pct}%`;
+    })
+    .join("\n");
 
   return `Analyze DeFi portfolio on Monad:\n${positions}\n\nProvide JSON: {riskLevel, diversification, insights[], recommendations[]}`;
 }
 
 function buildRecommendationsPrompt(tokens, portfolioData) {
-  return `Generate trading recommendations for tokens: ${tokens.join(', ')}.\nFormat: JSON array with {action, token, reason, confidence}`;
+  return `Generate trading recommendations for tokens: ${tokens.join(
+    ", "
+  )}.\nFormat: JSON array with {action, token, reason, confidence}`;
 }
 
 function parseAgentResponse(text, portfolio) {
   const metrics = calculateMetrics(portfolio);
   let parsed = {};
-  
+
   try {
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (jsonMatch) parsed = JSON.parse(jsonMatch[0]);
   } catch (e) {}
 
   return {
-    summary: `${metrics.numberOfTokens} tokens, ${metrics.diversificationScore.toFixed(0)}% diversified`,
+    summary: `${
+      metrics.numberOfTokens
+    } tokens, ${metrics.diversificationScore.toFixed(0)}% diversified`,
     riskLevel: parsed.riskLevel || determineRisk(metrics),
     diversification: parsed.diversification || metrics.diversificationScore,
-    insights: parsed.insights || ['Portfolio analyzed'],
-    recommendations: parsed.recommendations || ['Monitor allocations'],
+    insights: parsed.insights || ["Portfolio analyzed"],
+    recommendations: parsed.recommendations || ["Monitor allocations"],
     metrics: {
       totalTokens: metrics.numberOfTokens,
       concentration: metrics.concentration,
-      topHolding: metrics.topHolding
+      topHolding: metrics.topHolding,
     },
     aiPowered: true,
-    provider: 'Crestal'
+    provider: "Crestal",
   };
 }
 
@@ -117,27 +135,42 @@ function parseRecommendations(text) {
     const jsonMatch = text.match(/\[[\s\S]*\]/);
     if (jsonMatch) return JSON.parse(jsonMatch[0]);
   } catch (e) {}
-  return [{action: 'ANALYZE', reason: 'Review tokens', confidence: 'medium'}];
+  return [{ action: "ANALYZE", reason: "Review tokens", confidence: "medium" }];
 }
 
 function calculateMetrics(portfolio) {
-  const total = portfolio.balances.reduce((sum, b) => sum + Number(b.balance), 0);
-  const positions = portfolio.balances.map(b => ({
-    token: b.tokenAddress,
-    value: Number(b.balance),
-    percentage: (Number(b.balance) / total) * 100
-  })).sort((a, b) => b.value - a.value);
+  const total = portfolio.balances.reduce(
+    (sum, b) => sum + Number(b.balance),
+    0
+  );
+  const positions = portfolio.balances
+    .map((b) => ({
+      token: b.tokenAddress,
+      value: Number(b.balance),
+      percentage: (Number(b.balance) / total) * 100,
+    }))
+    .sort((a, b) => b.value - a.value);
 
   const expectedWeight = 100 / portfolio.balances.length;
-  const divScore = portfolio.balances.length === 1 ? 0 :
-    100 - positions.reduce((sum, p) => sum + Math.abs(p.percentage - expectedWeight), 0) / 2;
+  const divScore =
+    portfolio.balances.length === 1
+      ? 0
+      : 100 -
+        positions.reduce(
+          (sum, p) => sum + Math.abs(p.percentage - expectedWeight),
+          0
+        ) /
+          2;
 
   return {
     diversificationScore: Math.max(0, Math.min(100, divScore)),
-    concentration: positions.reduce((sum, p) => sum + Math.pow(p.percentage / 100, 2), 0),
+    concentration: positions.reduce(
+      (sum, p) => sum + Math.pow(p.percentage / 100, 2),
+      0
+    ),
     topHolding: positions[0],
     largestPositionPercent: positions[0].percentage,
-    numberOfTokens: portfolio.balances.length
+    numberOfTokens: portfolio.balances.length,
   };
 }
 
@@ -146,7 +179,7 @@ function determineRisk(metrics) {
   if (metrics.numberOfTokens === 1) score += 40;
   if (metrics.largestPositionPercent > 70) score += 30;
   score += (100 - metrics.diversificationScore) / 3;
-  
+
   if (score >= 60) return "high";
   if (score >= 30) return "medium";
   return "low";
@@ -158,14 +191,14 @@ function generateFallback(portfolio) {
     summary: `${portfolio.balances.length} tokens`,
     riskLevel: determineRisk(metrics),
     diversification: metrics.diversificationScore,
-    insights: ['Portfolio analyzed'],
-    recommendations: ['Monitor positions'],
+    insights: ["Portfolio analyzed"],
+    recommendations: ["Monitor positions"],
     metrics: {
       totalTokens: portfolio.balances.length,
       concentration: metrics.concentration,
-      topHolding: metrics.topHolding
+      topHolding: metrics.topHolding,
     },
-    aiPowered: false
+    aiPowered: false,
   };
 }
 
@@ -176,12 +209,12 @@ function generateEmptyResponse() {
     diversification: 0,
     insights: ["Acquire tokens to start"],
     recommendations: ["Get WMON first"],
-    metrics: {totalTokens: 0, concentration: 0, topHolding: null},
-    aiPowered: false
+    metrics: { totalTokens: 0, concentration: 0, topHolding: null },
+    aiPowered: false,
   };
 }
 
 export default {
   analyzePortfolioWithCrestal,
-  generateCrestalRecommendations
+  generateCrestalRecommendations,
 };

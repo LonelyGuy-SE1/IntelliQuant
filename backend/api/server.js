@@ -3,14 +3,14 @@
  * Express server exposing portfolio analytics and AI recommendations
  */
 
-import express from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
 
 // Import routes
-import tokensRouter from './routes/tokens.js';
-import portfolioRouter from './routes/portfolio.js';
-import recommendationsRouter from './routes/recommendations.js';
+import tokensRouter from "./routes/tokens.js";
+import portfolioRouter from "./routes/portfolio.js";
+import recommendationsRouter from "./routes/recommendations.js";
 
 dotenv.config();
 
@@ -28,71 +28,81 @@ app.use((req, res, next) => {
 });
 
 // Health check
-app.get('/health', (req, res) => {
+app.get("/health", (req, res) => {
   res.json({
-    status: 'ok',
+    status: "ok",
     timestamp: Date.now(),
-    service: 'IntelliQuant API',
-    version: '1.0.0'
+    service: "IntelliQuant API",
+    version: "1.0.0",
   });
 });
 
 // Test AI endpoint
-app.get('/api/ai/test', async (req, res) => {
+app.get("/api/ai/test", async (req, res) => {
   try {
-    const { analyzePortfolioWithCrestal } = await import('../services/ai-crestal.js');
+    const { analyzePortfolioWithCrestal } = await import(
+      "../services/ai-crestal.js"
+    );
     const testPortfolio = {
-      userAddress: '0xTest',
+      userAddress: "0xTest",
       balances: [
-        { tokenAddress: '0x760AfE86e5de5fa0Ee542fc7B7B713e1c5425701', token: 'WMON', balance: '1000000' },
-        { tokenAddress: '0x836047a99e11f376522b447bffb6e3495dd0637c', token: 'ETH', balance: '500000' }
-      ]
+        {
+          tokenAddress: "0x760AfE86e5de5fa0Ee542fc7B7B713e1c5425701",
+          token: "WMON",
+          balance: "1000000",
+        },
+        {
+          tokenAddress: "0x836047a99e11f376522b447bffb6e3495dd0637c",
+          token: "ETH",
+          balance: "500000",
+        },
+      ],
     };
-    
+
     const analysis = await analyzePortfolioWithCrestal(testPortfolio);
     res.json({
       success: true,
-      message: 'Crestal AI Agent is working!',
-      analysis
+      message: "Crestal AI Agent is working!",
+      analysis,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
       error: error.message,
-      message: 'Crestal API key may be invalid or network issue'
+      message: "Crestal API key may be invalid or network issue",
     });
   }
 });
 
 // API Routes
-app.use('/api/tokens', tokensRouter);
-app.use('/api/portfolio', portfolioRouter);
-app.use('/api/recommendations', recommendationsRouter);
+app.use("/api/tokens", tokensRouter);
+app.use("/api/portfolio", portfolioRouter);
+app.use("/api/recommendations", recommendationsRouter);
 
 // Root route
-app.get('/', (req, res) => {
+app.get("/", (req, res) => {
   res.json({
-    name: 'IntelliQuant API',
-    version: '1.0.0',
-    description: 'AI-powered portfolio management on Monad',
+    name: "IntelliQuant API",
+    version: "1.0.0",
+    description: "AI-powered portfolio management on Monad",
     endpoints: {
-      health: 'GET /health',
+      health: "GET /health",
       tokens: {
-        score: 'GET /api/tokens/:address/score',
-        pools: 'GET /api/tokens/:address/pools',
-        scores: 'POST /api/tokens/scores'
+        score: "GET /api/tokens/:address/score",
+        pools: "GET /api/tokens/:address/pools",
+        scores: "POST /api/tokens/scores",
       },
       portfolio: {
-        get: 'GET /api/portfolio/:address',
-        analyze: 'POST /api/portfolio/:address/analyze',
-        rebalance: 'POST /api/portfolio/:address/rebalance'
+        get: "GET /api/portfolio/:address",
+        analyze: "POST /api/portfolio/:address/analyze",
+        rebalance: "POST /api/portfolio/:address/rebalance",
       },
       recommendations: {
-        generate: 'POST /api/recommendations',
-        healthiest: 'POST /api/recommendations/healthiest'
-      }
+        generate: "POST /api/recommendations",
+        healthiest: "POST /api/recommendations/healthiest",
+      },
     },
-    docs: 'https://github.com/intelliquant/docs'
+    docs: "https://github.com/intelliquant/docs",
   });
 });
 
@@ -100,18 +110,18 @@ app.get('/', (req, res) => {
 app.use((req, res) => {
   res.status(404).json({
     success: false,
-    error: 'Endpoint not found',
-    path: req.path
+    error: "Endpoint not found",
+    path: req.path,
   });
 });
 
 // Error handler
 app.use((err, req, res, next) => {
-  console.error('Server error:', err);
+  console.error("Server error:", err);
   res.status(500).json({
     success: false,
-    error: 'Internal server error',
-    message: err.message
+    error: "Internal server error",
+    message: err.message,
   });
 });
 
@@ -123,7 +133,7 @@ app.listen(PORT, () => {
 ║         IntelliQuant API Server               ║
 ║                                               ║
 ║  Port: ${PORT}                                  ║
-║  Environment: ${process.env.NODE_ENV || 'development'}                     ║
+║  Environment: ${process.env.NODE_ENV || "development"}                     ║
 ║                                               ║
 ║  Endpoints:                                   ║
 ║  - GET  /health                               ║
@@ -134,8 +144,8 @@ app.listen(PORT, () => {
 ║  - POST /api/recommendations                  ║
 ║                                               ║
 ║  Envio Indexers:                              ║
-║  - Portfolio: ${process.env.ENVIO_PORTFOLIO_ENDPOINT || 'Not configured'}
-║  - DEX: ${process.env.ENVIO_DEX_ENDPOINT || 'Not configured'}
+║  - Portfolio: ${process.env.ENVIO_PORTFOLIO_ENDPOINT || "Not configured"}
+║  - DEX: ${process.env.ENVIO_DEX_ENDPOINT || "Not configured"}
 ║                                               ║
 ╚═══════════════════════════════════════════════╝
   `);

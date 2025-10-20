@@ -5,6 +5,7 @@
 ## What You Need to Know
 
 Envio uses **git-based deployment** like Vercel:
+
 - You don't run `envio deploy` locally
 - Push to a deployment branch → Envio auto-detects and deploys
 - GitHub App integration handles everything
@@ -25,6 +26,7 @@ Go to: **https://envio.dev/app/login**
 ### 2️⃣ Install Envio Deployments GitHub App
 
 Once logged in:
+
 1. Select your **organization/personal account**
 2. Click **"Install GitHub App"**
 3. Grant access to the **IntelliQuant** repository
@@ -69,6 +71,7 @@ git push origin main
 ## 🔧 What Envio Will Do Automatically
 
 When you push to your deployment branch:
+
 1. ✅ Detects `package.json` (envio ^2.30.1, pnpm 9.10.0)
 2. ✅ Installs dependencies with pnpm
 3. ✅ Runs `envio codegen` to generate types
@@ -84,13 +87,16 @@ When you push to your deployment branch:
 **Network**: Monad Testnet (Chain ID 10143)
 **Start Block**: 0 (auto-detects first relevant block)
 **Contracts**:
+
 - WMON: `0x760AfE86e5de5fa0Ee542fc7B7B713e1c5425701`
 - ETH: `0x836047a99e11f376522b447bffb6e3495dd0637c`
 
 **Events Indexed**:
+
 - `Transfer(address indexed from, address indexed to, uint256 value)`
 
 **Entities Created**:
+
 - `User` - Aggregated user data
 - `UserBalance` - Per-token balances
 - `Transfer` - Individual transfer events
@@ -115,7 +121,7 @@ query TestPortfolio {
       transferCount
     }
   }
-  
+
   transfers(limit: 10, orderBy: timestamp, orderDirection: desc) {
     id
     from
@@ -162,16 +168,19 @@ ENVIO_API_KEY=pk-7a4dbd1aa8d5b8a7b9bb320acee0bc25deab56639c84ddf88e1b82fd2e8dc4c
 ## 🆘 Troubleshooting
 
 **Build Fails**:
+
 - Check package.json has `envio: ^2.30.1` (NOT 2.29.x)
 - Ensure pnpm version is 9.10.0 in engines
 - Verify config.yaml path is correct
 
 **No Data Syncing**:
+
 - Check Monad testnet RPC is accessible
 - Verify contract addresses are correct
 - Check start_block isn't too high
 
 **GraphQL Errors**:
+
 - Wait for "Historical Sync Complete" before querying
 - Check entity names match schema.graphql
 

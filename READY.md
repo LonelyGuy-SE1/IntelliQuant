@@ -1,6 +1,7 @@
 # ✅ CLEANED UP - Ready to Deploy
 
 ## What Was Removed
+
 - ❌ 8 useless .md files (ENVIO_DEPLOYMENT_FIX, HACKATHON_CHECKLIST, etc.)
 - ❌ mock-data.js (no fake shit)
 - ❌ ai-openrouter.js (not using)
@@ -9,19 +10,22 @@
 ## What's Left (Everything Works)
 
 ### Backend Services ✅
+
 - `ai-crestal.js` - Crestal Network Agent integration
 - `ai-analysis.js` - Portfolio AI analysis (uses Crestal)
 - `envio-client.js` - Envio GraphQL queries (CLEAN, no mocks)
-- `scoring-engine.js` - Token health scoring  
+- `scoring-engine.js` - Token health scoring
 - `recommendations.js` - AI-powered recommendations
 - `risk-analysis.js` - Portfolio risk analysis
 
 ### Envio Indexers ✅
+
 - `portfolio-indexer/` - Tracks ERC-20 transfers for balances
 - `dex-indexer/` - Tracks DEX swaps and liquidity
 - `token-metrics-indexer/` - Aggregates token metrics
 
 ### Frontend ✅
+
 - Complete UI with all sections
 - Smart account integration (FIXED - using `signer` not `signatory`)
 - Portfolio, Analysis, Delegations, etc.
@@ -49,6 +53,7 @@ cp .env.example .env
 ```
 
 Edit `.env`:
+
 ```
 PORT=3001
 CRESTAL_API_KEY=your_actual_key_here
@@ -84,6 +89,7 @@ npm run dev
 **Envio Portfolio Indexer working = $1K** 🎯
 
 Focus on:
+
 1. Deploy portfolio indexer to Envio hosted service
 2. Get GraphQL endpoint
 3. Update backend .env
@@ -132,7 +138,7 @@ cd envio-indexers/portfolio-indexer && envio deploy
 # Start Backend
 cd backend && npm start
 
-# Start Frontend  
+# Start Frontend
 cd frontend && npm run dev
 
 # Test Envio Endpoint
@@ -144,6 +150,7 @@ curl -X POST https://your-endpoint/v1/graphql \
 ## You're Ready!
 
 Everything is cleaned up and focused on what matters:
+
 1. ✅ No fake/mock data
 2. ✅ Crestal AI integration ready
 3. ✅ Envio ready to deploy
