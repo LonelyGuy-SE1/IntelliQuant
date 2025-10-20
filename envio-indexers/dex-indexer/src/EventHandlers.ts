@@ -1,14 +1,12 @@
 /**
  * DEX Indexer Event Handlers
  * Processes swap and liquidity events from DEX pools
- *
- * Note: UniswapV2Pool and UniswapV3Pool are injected by Envio (no imports needed)
  */
 
 /**
  * Handler for Uniswap V2 Swap events
  */
-UniswapV2Pool.Swap.handler(async ({ event, context }: any) => {
+const UniswapV2PoolSwapHandler = async ({ event, context }: any) => {
   const { sender, amount0In, amount1In, amount0Out, amount1Out, to } =
     event.params;
   const poolAddress = event.srcAddress;
@@ -53,12 +51,12 @@ UniswapV2Pool.Swap.handler(async ({ event, context }: any) => {
     amount1In > 0n ? amount1In : amount1Out,
     timestamp
   );
-});
+};
 
 /**
  * Handler for Uniswap V2 Mint events (liquidity add)
  */
-UniswapV2Pool.Mint.handler(async ({ event, context }: any) => {
+const UniswapV2PoolMintHandler = async ({ event, context }: any) => {
   const { sender, amount0, amount1 } = event.params;
   const poolAddress = event.srcAddress;
   const timestamp = event.block.timestamp;
@@ -83,12 +81,12 @@ UniswapV2Pool.Mint.handler(async ({ event, context }: any) => {
   context.LiquidityEvent.set(liquidityEntity);
 
   await updatePoolStats(context, poolAddress, 0n, 0n, "liquidity", timestamp);
-});
+};
 
 /**
  * Handler for Uniswap V2 Burn events (liquidity remove)
  */
-UniswapV2Pool.Burn.handler(async ({ event, context }: any) => {
+const UniswapV2PoolBurnHandler = async ({ event, context }: any) => {
   const { sender, amount0, amount1, to } = event.params;
   const poolAddress = event.srcAddress;
   const timestamp = event.block.timestamp;
@@ -113,12 +111,12 @@ UniswapV2Pool.Burn.handler(async ({ event, context }: any) => {
   context.LiquidityEvent.set(liquidityEntity);
 
   await updatePoolStats(context, poolAddress, 0n, 0n, "liquidity", timestamp);
-});
+};
 
 /**
  * Handler for Uniswap V2 Sync events (reserve updates)
  */
-UniswapV2Pool.Sync.handler(async ({ event, context }: any) => {
+const UniswapV2PoolSyncHandler = async ({ event, context }: any) => {
   const { reserve0, reserve1 } = event.params;
   const poolAddress = event.srcAddress;
   const timestamp = event.block.timestamp;
@@ -146,12 +144,12 @@ UniswapV2Pool.Sync.handler(async ({ event, context }: any) => {
   pool.lastUpdated = timestamp;
 
   context.Pool.set(pool);
-});
+};
 
 /**
  * Handler for Uniswap V3 Swap events
  */
-UniswapV3Pool.Swap.handler(async ({ event, context }: any) => {
+const UniswapV3PoolSwapHandler = async ({ event, context }: any) => {
   const { sender, recipient, amount0, amount1, sqrtPriceX96, liquidity, tick } =
     event.params;
   const poolAddress = event.srcAddress;
@@ -198,7 +196,67 @@ UniswapV3Pool.Swap.handler(async ({ event, context }: any) => {
   context.Pool.set(pool);
 
   await updateHourlySnapshot(context, poolAddress, abs0, abs1, timestamp);
-});
+};
+
+/**
+ * Handler for Uniswap V3 Mint events
+ */
+const UniswapV3PoolMintHandler = async ({ event, context }: any) => {
+  const { sender, owner, tickLower, tickUpper, amount, amount0, amount1 } = event.params;
+  const poolAddress = event.srcAddress;
+  const timestamp = event.block.timestamp;
+
+  const liquidityEntity = {
+    id: `${event.transaction.hash}-${event.logIndex}`,
+    pool: poolAddress,
+    eventType: "MINT",
+    sender: sender,
+    owner: owner,
+    to: undefined,
+    amount0: amount0,
+    amount1: amount1,
+    liquidity: amount,
+    tickLower: Number(tickLower),
+    tickUpper: Number(tickUpper),
+    timestamp: timestamp,
+    blockNumber: event.block.number,
+    transactionHash: event.transaction.hash,
+  };
+
+  context.LiquidityEvent.set(liquidityEntity);
+
+  await updatePoolStats(context, poolAddress, 0n, 0n, "liquidity", timestamp);
+};
+
+/**
+ * Handler for Uniswap V3 Burn events
+ */
+const UniswapV3PoolBurnHandler = async ({ event, context }: any) => {
+  const { owner, tickLower, tickUpper, amount, amount0, amount1 } = event.params;
+  const poolAddress = event.srcAddress;
+  const timestamp = event.block.timestamp;
+
+  const liquidityEntity = {
+    id: `${event.transaction.hash}-${event.logIndex}`,
+    pool: poolAddress,
+    eventType: "BURN",
+    sender: undefined,
+    owner: owner,
+    to: undefined,
+    amount0: amount0,
+    amount1: amount1,
+    liquidity: amount,
+    tickLower: Number(tickLower),
+    tickUpper: Number(tickUpper),
+    timestamp: timestamp,
+    blockNumber: event.block.number,
+    transactionHash: event.transaction.hash,
+  };
+
+  context.LiquidityEvent.set(liquidityEntity);
+
+  await updatePoolStats(context, poolAddress, 0n, 0n, "liquidity", timestamp);
+};
 
 /**
  * Updates pool statistics
@@ -290,3 +348,18 @@ async function updateHourlySnapshot(
 
   context.PoolHourlySnapshot.set(snapshot);
 }
+
+// Export handlers using proper Envio pattern
+module.exports = {
+  UniswapV2Pool: {
+    Swap: UniswapV2PoolSwapHandler,
+    Mint: UniswapV2PoolMintHandler,
+    Burn: UniswapV2PoolBurnHandler,
+    Sync: UniswapV2PoolSyncHandler,
+  },
+  UniswapV3Pool: {
+    Swap: UniswapV3PoolSwapHandler,
+    Mint: UniswapV3PoolMintHandler,
+    Burn: UniswapV3PoolBurnHandler,
+  },
+};

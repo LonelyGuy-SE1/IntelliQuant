@@ -1,56 +1,60 @@
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
-// Envio requires this EXACT pattern - direct property assignment
-ERC20Token.Transfer.handler(async ({ event, context }) => {
-  const { from, to, value } = event.params;
-  const tokenAddress = event.srcAddress;
-  const timestamp = BigInt(event.block.timestamp);
-  const blockNumber = BigInt(event.block.number);
+// Envio handler registration - proper pattern
+module.exports = {
+  ERC20Token: {
+    Transfer: async ({ event, context }) => {
+      const { from, to, value } = event.params;
+      const tokenAddress = event.srcAddress;
+      const timestamp = BigInt(event.block.timestamp);
+      const blockNumber = BigInt(event.block.number);
 
-  const transferEntity = {
-    id: `${event.transaction.hash}-${event.logIndex}`,
-    from: from,
-    to: to,
-    value: value,
-    tokenAddress: tokenAddress,
-    timestamp: timestamp,
-    transactionHash: event.transaction.hash,
-    blockNumber: blockNumber,
-  };
+      const transferEntity = {
+        id: `${event.transaction.hash}-${event.logIndex}`,
+        from: from,
+        to: to,
+        value: value,
+        tokenAddress: tokenAddress,
+        timestamp: timestamp,
+        transactionHash: event.transaction.hash,
+        blockNumber: blockNumber,
+      };
 
-  context.Transfer.set(transferEntity);
+      context.Transfer.set(transferEntity);
 
-  let tokenEntity = await context.Token.get(tokenAddress);
-  if (!tokenEntity) {
-    tokenEntity = {
-      id: tokenAddress,
-      address: tokenAddress,
-      holderCount: 0,
-      totalTransfers: 0,
-      lastActivity: timestamp,
-    };
-  }
-  tokenEntity.totalTransfers += 1;
-  tokenEntity.lastActivity = timestamp;
-  context.Token.set(tokenEntity);
+      let tokenEntity = await context.Token.get(tokenAddress);
+      if (!tokenEntity) {
+        tokenEntity = {
+          id: tokenAddress,
+          address: tokenAddress,
+          holderCount: 0,
+          totalTransfers: 0,
+          lastActivity: timestamp,
+        };
+      }
+      tokenEntity.totalTransfers += 1;
+      tokenEntity.lastActivity = timestamp;
+      context.Token.set(tokenEntity);
 
-  if (from !== ZERO_ADDRESS) {
-    await updateUserBalance(
-      context,
-      from,
-      tokenAddress,
-      value,
-      "subtract",
-      timestamp
-    );
-    await updateUser(context, from, timestamp);
-  }
+      if (from !== ZERO_ADDRESS) {
+        await updateUserBalance(
+          context,
+          from,
+          tokenAddress,
+          value,
+          "subtract",
+          timestamp
+        );
+        await updateUser(context, from, timestamp);
+      }
 
-  if (to !== ZERO_ADDRESS) {
-    await updateUserBalance(context, to, tokenAddress, value, "add", timestamp);
-    await updateUser(context, to, timestamp);
-  }
-});
+      if (to !== ZERO_ADDRESS) {
+        await updateUserBalance(context, to, tokenAddress, value, "add", timestamp);
+        await updateUser(context, to, timestamp);
+      }
+    },
+  },
+};
 
 async function updateUserBalance(
   context,
