@@ -12,9 +12,9 @@ contracts:
   - name: ERC20Token
     abi_file_path: ./abis/ERC20.json
     address:
-      # Deploy a simple ERC20 or use any existing testnet token
-      # For testing, we'll use a common pattern address
-      - "0x1111111111111111111111111111111111111111"
+      - "0x6BB379A2056d1304E73012b99338F8F581eE2E18"
+      - "0x3a98250F98Dd388C211206983453837C8365BDc1"
+      - "0xaEef2f6B429Cb59C9B2D7bB2141ADa993E8571c3"
     handler: src/EventHandlers.js
     events:
       - event: "Transfer(address indexed from, address indexed to, uint256 value)"
