@@ -1,10 +1,7 @@
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
-// Export handler for Envio to register
-module.exports = {
-  ERC20Token: {
-    Transfer: {
-      handler: async ({ event, context }) => {
+// Envio requires this EXACT pattern - direct property assignment
+ERC20Token.Transfer.handler(async ({ event, context }) => {
   const { from, to, value } = event.params;
   const tokenAddress = event.srcAddress;
   const timestamp = BigInt(event.block.timestamp);
@@ -53,10 +50,7 @@ module.exports = {
     await updateUserBalance(context, to, tokenAddress, value, "add", timestamp);
     await updateUser(context, to, timestamp);
   }
-      }
-    }
-  }
-};
+});
 
 async function updateUserBalance(
   context,

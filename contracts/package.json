@@ -1,0 +1,17 @@
+{
+  "name": "intelliquant-contracts",
+  "version": "1.0.0",
+  "description": "Smart contracts for IntelliQuant on Monad",
+  "scripts": {
+    "deploy": "hardhat run scripts/deploy.js --network monadTestnet",
+    "verify": "hardhat verify --network monadTestnet"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "hardhat": "^2.19.0"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.0.0",
+    "dotenv": "^16.0.0"
+  }
+}

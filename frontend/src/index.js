@@ -293,9 +293,9 @@ async function handleAnalyzeTokens() {
     showLoading("Analyzing tokens with AI...");
 
     // Direct Crestal analysis for each token
-    const { crestalAI } = await import('./config/crestal.js');
+    const { crestalAI } = await import("./config/crestal.js");
     const results = [];
-    
+
     for (const tokenAddress of tokens) {
       const prompt = `Analyze this ERC-20 token contract on Monad testnet:
       
@@ -311,15 +311,15 @@ Be concise and actionable.`;
 
       const result = await crestalAI.sendMessage(
         prompt,
-        'tokenAnalysis',
+        "tokenAnalysis",
         { contractAddress: tokenAddress },
         `token_${tokenAddress}`
       );
-      
+
       results.push({
         token: tokenAddress,
-        analysis: result.success ? result.response : 'Analysis failed',
-        score: result.success ? 75 : 0 // Placeholder score
+        analysis: result.success ? result.response : "Analysis failed",
+        score: result.success ? 75 : 0, // Placeholder score
       });
     }
 
@@ -388,14 +388,14 @@ async function handleLoadPortfolio() {
     // Auto-load AI analysis using Crestal directly
     try {
       showLoading("Analyzing with AI...");
-      
+
       // Direct Crestal call - bypass backend
-      const { crestalAI } = await import('./config/crestal.js');
+      const { crestalAI } = await import("./config/crestal.js");
       const result = await crestalAI.analyzePortfolio(
         state.smartAccount.address,
         portfolio
       );
-      
+
       if (result.success) {
         displayAIAnalysis({ analysis: result.response });
       }
