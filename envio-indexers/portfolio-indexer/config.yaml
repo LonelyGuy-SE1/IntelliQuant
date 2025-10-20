@@ -9,17 +9,17 @@ contracts:
     handler: src/EventHandlers.js
     events:
       - event: "Transfer(address indexed from, address indexed to, uint256 value)"
+        requiredEntities: []
 
 # Networks to index
 networks:
   - id: 10143  # Monad Testnet
-    start_block: 7530000
+    start_block: 0  # Start from beginning
     contracts:
       - name: ERC20Token
         address:
-          - "0x6BB379A2056d1304E73012b99338F8F581eE2E18"  # Token 1
-          - "0x3a98250F98Dd388C211206983453837C8365BDc1"  # Token 2
-          - "0xaEef2f6B429Cb59C9B2D7bB2141ADa993E8571c3"  # Token 3
+          # Wildcard mode - index ALL ERC20 Transfer events
+          - "*"
 
 # Optional: Include transaction data in events
 field_selection:
