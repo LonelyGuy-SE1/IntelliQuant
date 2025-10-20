@@ -112,17 +112,21 @@ export async function createSmartAccount(ownerAddress = null) {
     });
 
     // Get the account from wallet client
-    const [account] = await walletClient.getAddresses();
+    const [accountAddress] = await walletClient.getAddresses();
 
-    console.log('Creating smart account for owner:', account || owner);
+    console.log('Creating smart account for owner:', accountAddress || owner);
 
     // Create smart account (Hybrid implementation)
+    // The signatory should be the account address directly
     const smartAccount = await toMetaMaskSmartAccount({
       client: publicClient,
       implementation: Implementation.Hybrid,
-      deployParams: [account || owner, [], [], []], // Hybrid: owner, no initial passkeys
+      deployParams: [accountAddress || owner, [], [], []], // Hybrid: owner, no initial passkeys
       deploySalt: `0x${Date.now().toString(16)}`, // Unique salt based on timestamp
-      signatory: { account, walletClient },
+      signatory: {
+        account: accountAddress,
+        client: walletClient
+      },
     });
 
     smartAccountInstance = smartAccount;

@@ -7,21 +7,23 @@
   --accent-pink: #F71F7C;
   --accent-yellow: #FFD60A;
   --accent-green: #00F5A0;
+  --accent-red: #FF0040;
+  --accent-blue: #00F0FF;
 
-  /* Background Colors */
+  /* Background Colors - Pure Black */
   --bg-primary: #000000;
-  --bg-secondary: #0A0A0F;
-  --bg-card: #12121A;
-  --bg-hover: #1A1A24;
+  --bg-secondary: #000000;
+  --bg-card: #000000;
+  --bg-hover: rgba(0, 217, 255, 0.05);
 
-  /* Text Colors */
+  /* Text Colors - Neon Only */
   --text-primary: #FFFFFF;
-  --text-secondary: #A0AEC0;
-  --text-muted: #718096;
+  --text-secondary: #00D9FF;
+  --text-muted: #8B5CF6;
 
-  /* Border & Divider */
-  --border-color: #2D3748;
-  --border-glow: rgba(0, 217, 255, 0.3);
+  /* Border & Divider - Neon */
+  --border-color: rgba(0, 217, 255, 0.2);
+  --border-glow: rgba(0, 217, 255, 0.5);
 
   /* Shadows */
   --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
@@ -81,7 +83,8 @@ body {
   width: var(--sidebar-width);
   height: 100vh;
   background: var(--bg-card);
-  border-right: 1px solid var(--border-color);
+  border-right: 2px solid var(--border-color);
+  box-shadow: 2px 0 20px rgba(0, 217, 255, 0.15);
   display: flex;
   flex-direction: column;
   z-index: 1000;
@@ -97,6 +100,16 @@ body {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+}
+
+.logo-img {
+  width: 48px;
+  height: 48px;
+  border-radius: 0.5rem;
+  object-fit: cover;
+  border: 2px solid var(--primary-cyan);
+  box-shadow: 0 0 15px rgba(0, 217, 255, 0.3);
+  animation: float 3s ease-in-out infinite;
 }
 
 .logo-icon {
@@ -319,19 +332,20 @@ body {
 
 .stat-card {
   background: var(--bg-card);
-  border: 1px solid var(--border-color);
+  border: 2px solid var(--border-color);
   border-radius: 1rem;
   padding: 1.5rem;
   display: flex;
   align-items: center;
   gap: 1rem;
   transition: all 0.3s ease;
+  box-shadow: 0 0 15px rgba(0, 217, 255, 0.1);
 }
 
 .stat-card:hover {
   transform: translateY(-2px);
   border-color: var(--primary-cyan);
-  box-shadow: 0 8px 16px rgba(0, 217, 255, 0.1);
+  box-shadow: 0 0 25px rgba(0, 217, 255, 0.3);
 }
 
 .stat-icon {
@@ -367,14 +381,16 @@ body {
 /* ========== CARDS ========== */
 .card {
   background: var(--bg-card);
-  border: 1px solid var(--border-color);
+  border: 2px solid var(--border-color);
   border-radius: 1rem;
   overflow: hidden;
   transition: all 0.3s ease;
+  box-shadow: 0 0 20px rgba(0, 217, 255, 0.1);
 }
 
 .card:hover {
-  border-color: rgba(0, 217, 255, 0.3);
+  border-color: var(--primary-cyan);
+  box-shadow: 0 0 30px rgba(0, 217, 255, 0.3);
 }
 
 .card-header {
