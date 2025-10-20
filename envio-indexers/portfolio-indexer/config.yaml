@@ -14,6 +14,10 @@ contracts:
 networks:
   - id: 10143  # Monad Testnet
     start_block: 7800000  # Recent block to avoid scanning empty history
+    contracts:
+      - name: ERC20Token
+        # No specific addresses needed for wildcard mode
+        # Handler will index ALL Transfer events
 
 # Optional: Include transaction data in events
 field_selection:
