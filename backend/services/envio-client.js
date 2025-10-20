@@ -24,17 +24,16 @@ const dexClient = new GraphQLClient(
 export async function getUserPortfolio(address) {
   const query = gql`
     query GetUserPortfolio($address: String!) {
-      User(where: { address: { _eq: $address } }) {
-        address
-        totalTokens
+      UserBalance(
+        where: { userAddress: { _eq: $address }, balance: { _gt: "0" } }
+      ) {
+        id
+        userAddress
+        tokenAddress
+        token
+        balance
+        transferCount
         lastUpdated
-        balances {
-          token
-          tokenAddress
-          balance
-          transferCount
-          lastUpdated
-        }
       }
     }
   `;
@@ -43,7 +42,24 @@ export async function getUserPortfolio(address) {
     const data = await portfolioClient.request(query, {
       address: address.toLowerCase(),
     });
-    return data.User[0] || null;
+
+    // Format response
+    if (!data.UserBalance || data.UserBalance.length === 0) {
+      return {
+        address,
+        balances: [],
+        totalTokens: 0,
+      };
+    }
+
+    return {
+      address,
+      balances: data.UserBalance,
+      totalTokens: data.UserBalance.length,
+      lastUpdated: Math.max(
+        ...data.UserBalance.map((b) => Number(b.lastUpdated))
+      ),
+    };
   } catch (error) {
     console.error("Error fetching portfolio:", error.message);
     throw error;

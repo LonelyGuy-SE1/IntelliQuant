@@ -38,43 +38,26 @@ app.get("/health", (req, res) => {
   });
 });
 
-// Test AI endpoint (GET)
+// Test AI endpoint (GET) - Crestal now in frontend
 app.get("/api/ai/test", async (req, res) => {
   try {
-    const { analyzePortfolioWithCrestal } = await import(
-      "../services/ai-crestal.js"
-    );
-    const testPortfolio = {
-      userAddress: "0xTest",
-      balances: [
-        {
-          tokenAddress: "0x760AfE86e5de5fa0Ee542fc7B7B713e1c5425701",
-          token: "WMON",
-          balance: "1000000",
-        },
-        {
-          tokenAddress: "0x836047a99e11f376522b447bffb6e3495dd0637c",
-          token: "ETH",
-          balance: "500000",
-        },
-      ],
-    };
-    const result = await analyzePortfolioWithCrestal(testPortfolio);
-    res.json({ success: true, analysis: result });
+    res.json({
+      success: true,
+      message:
+        "Crestal AI is now integrated directly in frontend for better performance",
+    });
   } catch (error) {
     console.error("AI test error:", error);
     res.status(500).json({
       success: false,
       error: error.message,
-      message: "Crestal API key may be invalid or network issue",
     });
   }
 });
 
-// Test AI endpoint (POST) for chatbox
+// Test AI endpoint (POST) for chatbox - Crestal now in frontend
 app.post("/api/ai/test", async (req, res) => {
   try {
-    const aiCrestal = await import("../services/ai-crestal.js");
     const { prompt } = req.body;
 
     if (!prompt) {
@@ -85,8 +68,11 @@ app.post("/api/ai/test", async (req, res) => {
     }
 
     console.log("Crestal chat request:", prompt);
-    const chatId = await aiCrestal.default.createChat();
-    const response = await aiCrestal.default.sendMessage(chatId, prompt);
+    res.json({
+      success: true,
+      message: "Crestal AI is integrated in frontend",
+      prompt,
+    });
 
     res.json({
       success: true,

@@ -372,15 +372,20 @@ function getScoreBadgeClass(score) {
 
 // ========== PORTFOLIO ==========
 async function handleLoadPortfolio() {
-  if (!state.smartAccount) {
-    showError("Create a smart account first");
+  if (!state.isConnected || !state.eoaAddress) {
+    showError("Please connect your wallet first");
     return;
   }
 
   try {
-    showLoading("Loading portfolio...");
+    showLoading("Loading portfolio from Envio...");
 
-    const response = await api.get(`/portfolio/${state.smartAccount.address}`);
+    // Query Envio GraphQL directly for user's token balances
+    const address = state.smartAccount
+      ? state.smartAccount.address
+      : state.eoaAddress;
+
+    const response = await api.get(`/portfolio/${address}`);
     const portfolio = response.data;
 
     displayPortfolio(portfolio);
@@ -391,10 +396,7 @@ async function handleLoadPortfolio() {
 
       // Direct Crestal call - bypass backend
       const { crestalAI } = await import("./config/crestal.js");
-      const result = await crestalAI.analyzePortfolio(
-        state.smartAccount.address,
-        portfolio
-      );
+      const result = await crestalAI.analyzePortfolio(address, portfolio);
 
       if (result.success) {
         displayAIAnalysis({ analysis: result.response });

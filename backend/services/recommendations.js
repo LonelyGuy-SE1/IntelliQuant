@@ -1,33 +1,24 @@
 /**
- * AI Recommendations Service
+ * AI Recommendations Service (Crestal integration now in frontend)
  */
 
 import scoringEngine from "./scoring-engine.js";
-import crestalAI from "./ai-crestal.js";
 
 export async function generateRecommendations(tokenAddresses, limit = 5) {
   try {
     const scores = await scoringEngine.computeMultipleTokenScores(
       tokenAddresses
     );
-    const aiRecs = await crestalAI.generateCrestalRecommendations(
-      tokenAddresses
-    );
 
-    const recommendations = scores.map((score, idx) => {
-      const aiRec = aiRecs[idx] || {
-        action: "HOLD",
-        reason: "Monitor",
-        confidence: "medium",
-      };
-
+    const recommendations = scores.map((score) => {
       return {
         token: score.address,
         score: score.score,
         action:
           score.score >= 80 ? "BUY" : score.score >= 60 ? "HOLD" : "AVOID",
-        reason: aiRec.reason || score.explanation,
-        confidence: aiRec.confidence || "medium",
+        reason: score.explanation || "Based on token metrics analysis",
+        confidence:
+          score.score >= 80 ? "high" : score.score >= 60 ? "medium" : "low",
         components: score.components,
       };
     });

@@ -1,10 +1,9 @@
 /**
  * AI Portfolio Analysis Service
- * Uses Crestal Network Agent for intelligent insights
+ * Uses Crestal Network Agent for intelligent insights (handled in frontend)
  */
 
 import envioClient from "./envio-client.js";
-import crestalAI from "./ai-crestal.js";
 
 /**
  * Generate AI-powered portfolio insights
@@ -20,9 +19,31 @@ export async function analyzePortfolioWithAI(userAddress) {
       return generateEmptyPortfolioInsights();
     }
 
-    // Use Crestal Agent for analysis
-    console.log("🤖 Using Crestal AI Agent");
-    return await crestalAI.analyzePortfolioWithCrestal(portfolio);
+    // Calculate metrics and generate insights (Crestal is now handled in frontend)
+    const metrics = calculatePortfolioMetrics(portfolio.balances);
+    const insights = generateInsights(metrics, portfolio.balances);
+    const recommendations = generateRecommendations(
+      metrics,
+      portfolio.balances
+    );
+    const riskLevel = determineRiskLevel(metrics);
+    const summary = generateSummary(metrics, riskLevel);
+
+    return {
+      summary,
+      riskLevel,
+      diversification: metrics.diversificationScore,
+      insights,
+      recommendations,
+      metrics: {
+        totalTokens: metrics.numberOfTokens,
+        concentration: metrics.concentration,
+        topHolding: metrics.topHolding,
+      },
+      aiPowered: false,
+      provider: "local",
+      timestamp: Date.now(),
+    };
   } catch (error) {
     console.error("AI analysis error:", error);
     throw error;

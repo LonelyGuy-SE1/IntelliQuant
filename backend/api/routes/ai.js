@@ -1,6 +1,5 @@
 // AI Testing Routes
 import express from "express";
-import aiCrestal from "../../services/ai-crestal.js";
 
 const router = express.Router();
 
@@ -16,24 +15,18 @@ router.post("/test", async (req, res) => {
       });
     }
 
-    console.log("Testing Crestal with prompt:", prompt);
-
-    // Test with simple chat
-    const chatId = await aiCrestal.createChat();
-    const response = await aiCrestal.sendMessage(chatId, prompt);
-
+    // Crestal is now handled in frontend directly
     res.json({
       success: true,
-      chatId: chatId,
-      analysis: response,
+      message: "Crestal AI is integrated in frontend",
+      prompt: prompt,
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
-    console.error("Crestal test error:", error);
+    console.error("AI test error:", error);
     res.status(500).json({
       success: false,
       error: error.message,
-      fallback: "Using local analysis - Crestal API unavailable",
     });
   }
 });
