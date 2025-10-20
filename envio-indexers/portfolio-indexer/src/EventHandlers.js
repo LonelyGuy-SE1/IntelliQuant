@@ -1,9 +1,8 @@
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
-// Envio handler registration - proper pattern
-module.exports = {
-  ERC20Token: {
-    Transfer: async ({ event, context }) => {
+// ES6 export for Envio hosted service compatibility
+export const ERC20Token = {
+  Transfer: async ({ event, context }) => {
       const { from, to, value } = event.params;
       const tokenAddress = event.srcAddress;
       const timestamp = BigInt(event.block.timestamp);
