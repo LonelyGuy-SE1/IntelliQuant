@@ -290,12 +290,40 @@ async function handleAnalyzeTokens() {
   }
 
   try {
-    showLoading("Analyzing tokens...");
+    showLoading("Analyzing tokens with AI...");
 
-    const response = await api.post("/tokens/scores", { tokens });
-    const scores = response.data;
+    // Direct Crestal analysis for each token
+    const { crestalAI } = await import('./config/crestal.js');
+    const results = [];
+    
+    for (const tokenAddress of tokens) {
+      const prompt = `Analyze this ERC-20 token contract on Monad testnet:
+      
+Contract Address: ${tokenAddress}
+Chain: Monad Testnet (Chain ID: 10143)
 
-    displayTokenScores(scores);
+Provide analysis on:
+1. Token legitimacy and safety
+2. Potential risks or red flags
+3. Recommendation (buy/hold/avoid)
+
+Be concise and actionable.`;
+
+      const result = await crestalAI.sendMessage(
+        prompt,
+        'tokenAnalysis',
+        { contractAddress: tokenAddress },
+        `token_${tokenAddress}`
+      );
+      
+      results.push({
+        token: tokenAddress,
+        analysis: result.success ? result.response : 'Analysis failed',
+        score: result.success ? 75 : 0 // Placeholder score
+      });
+    }
+
+    displayTokenScores(results);
     hideLoading();
     showSuccess(`Analyzed ${tokens.length} token(s)`);
   } catch (error) {
@@ -323,41 +351,13 @@ function displayTokenScores(scores) {
           score.token || "Token"
         }</h3>
         <span class="badge ${getScoreBadgeClass(score.score)}">${
-        score.score
+        score.score || 0
       }/100</span>
       </div>
       <div class="card-body">
-        <p>${score.explanation || "Token health score"}</p>
-        ${
-          score.components
-            ? `
-          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-top: 1rem;">
-            <div class="info-group">
-              <label>Liquidity</label>
-              <div class="balance-display">${
-                score.components.liquidity || 0
-              }</div>
-            </div>
-            <div class="info-group">
-              <label>Stability</label>
-              <div class="balance-display">${
-                score.components.stability || 0
-              }</div>
-            </div>
-            <div class="info-group">
-              <label>Demand</label>
-              <div class="balance-display">${score.components.demand || 0}</div>
-            </div>
-            <div class="info-group">
-              <label>Slippage</label>
-              <div class="balance-display">${
-                score.components.slippage || 0
-              }</div>
-            </div>
-          </div>
-        `
-            : ""
-        }
+        <div style="white-space: pre-wrap; font-size: 0.9rem; line-height: 1.6;">
+          ${score.analysis || score.explanation || "Analysis pending..."}
+        </div>
       </div>
     </div>
   `
@@ -385,13 +385,20 @@ async function handleLoadPortfolio() {
 
     displayPortfolio(portfolio);
 
-    // Auto-load AI analysis
+    // Auto-load AI analysis using Crestal directly
     try {
       showLoading("Analyzing with AI...");
-      const analysisResponse = await api.post(
-        `/portfolio/${state.smartAccount.address}/analyze`
+      
+      // Direct Crestal call - bypass backend
+      const { crestalAI } = await import('./config/crestal.js');
+      const result = await crestalAI.analyzePortfolio(
+        state.smartAccount.address,
+        portfolio
       );
-      displayAIAnalysis(analysisResponse.data);
+      
+      if (result.success) {
+        displayAIAnalysis({ analysis: result.response });
+      }
     } catch (aiError) {
       console.error("AI analysis error:", aiError);
     }
