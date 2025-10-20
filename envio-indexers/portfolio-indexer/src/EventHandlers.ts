@@ -1,7 +1,4 @@
-/**
- * Portfolio Indexer Event Handlers
- * Processes ERC-20 Transfer events to maintain user token balances
- */
+import { ERC20Token } from "generated";
 
 ERC20Token.Transfer.handler(async ({ event, context }) => {
   const { from, to, value } = event.params;
